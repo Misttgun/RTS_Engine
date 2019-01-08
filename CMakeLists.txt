@@ -24,7 +24,7 @@ file(GLOB SOURCES "src/*.cpp")
 set(SFML_STATIC_LIBRARIES TRUE)
 
 # Set SFML directory
-set(SFML_DIR "lib/SFML-2.5.1/lib/cmake/SFML")
+set(SFML_DIR "lib/SFML/lib/cmake/SFML")
 
 find_package(SFML 2.5 COMPONENTS network audio graphics window system REQUIRED)
 
