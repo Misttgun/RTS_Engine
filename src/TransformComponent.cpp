@@ -4,7 +4,7 @@ Engine::TransformComponent::TransformComponent()
 	:BaseComponent(Component::Position), m_elevation(0)
 {}
 
-void Engine::TransformComponent::ReadIn(std::stringstream & t_stream)
+void Engine::TransformComponent::readIn(std::stringstream & t_stream)
 {
 	t_stream >> m_position.x >> m_position.y >> m_orientation.x >> m_orientation.y >> m_elevation;
 }

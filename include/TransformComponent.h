@@ -6,14 +6,15 @@
 #include <SFML/System.hpp>
 #include <sstream>
 
-namespace Engine {
+namespace Engine 
+{
 	class TransformComponent: public BaseComponent
 	{
 	public:
 		TransformComponent();
 		~TransformComponent() = default;
 
-		void ReadIn(std::stringstream& t_stream);
+		void readIn(std::stringstream& t_stream) override;
 
 		void setPosition(const float t_x, const float t_y);
 		void setPosition(const sf::Vector2f& t_pos);

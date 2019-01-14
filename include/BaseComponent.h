@@ -5,7 +5,8 @@
 #include "ECS_Types.h"
 #include <sstream>
 
-namespace Engine {
+namespace Engine 
+{
 	class BaseComponent
 	{
 	public:

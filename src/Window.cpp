@@ -27,38 +27,35 @@ void Engine::Window::endDraw()
 
 void Engine::Window::update()
 {
-	sf::Event event;
-	while (m_window.pollEvent(event))
-	{
-		if (event.type == sf::Event::Closed) {
-			m_isDone = true;
+	sf::Event event{};
+	while (m_window.pollEvent(event)) {
+		if (event.type == sf::Event::LostFocus)
+		{
+			m_isFocused = false; 
+			m_eventManager.setFocus(false);
 		}
-		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
-			toggleFullScreen();
+		else if (event.type == sf::Event::GainedFocus)
+		{
+			m_isFocused = true; 
+			m_eventManager.setFocus(true);
 		}
+
+		m_eventManager.handleEvent(event);
 	}
+
+	m_eventManager.update();
 }
 
-bool Engine::Window::isDone() const
-{
-	return m_isDone;
-}
-
-bool Engine::Window::isFullScreen() const
-{
-	return m_isFullscreen;
-}
-
-sf::Vector2u Engine::Window::getWindowSize() const
-{
-	return m_windowSize;
-}
-
-void Engine::Window::toggleFullScreen()
+void Engine::Window::toggleFullscreen(EventDetails * t_details)
 {
 	m_isFullscreen = !m_isFullscreen;
 	destroy();
 	create();
+}
+
+void Engine::Window::close(EventDetails * t_details)
+{
+	m_isDone = true;
 }
 
 void Engine::Window::draw(sf::Drawable & t_drawable)
@@ -72,6 +69,11 @@ void Engine::Window::setup(const std::string & t_title, const sf::Vector2u & t_s
 	m_windowSize = t_size;
 	m_isFullscreen = false;
 	m_isDone = false;
+	m_isFocused = false;
+
+	m_eventManager.addCallback("Fullscreen_toggle", &Window::toggleFullscreen, this);
+	m_eventManager.addCallback("Window_close", &Window::close, this);
+
 	create();
 }
 
@@ -82,7 +84,7 @@ void Engine::Window::destroy()
 
 void Engine::Window::create()
 {
-	auto style = m_isFullscreen ? sf::Style::Fullscreen : sf::Style::Default;
-	auto mode = sf::VideoMode(m_windowSize.x, m_windowSize.y, 32);
+	const auto style = m_isFullscreen ? sf::Style::Fullscreen : sf::Style::Default;
+	const auto mode = sf::VideoMode(m_windowSize.x, m_windowSize.y, 32);
 	m_window.create(mode, m_windowTitle, style);
 }
