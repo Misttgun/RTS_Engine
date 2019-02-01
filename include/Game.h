@@ -4,29 +4,27 @@
 
 #include "Window.h"
 
-namespace Engine 
+namespace SExE
 {
-	class Game 
-	{
-	public:
-		Game();
-		~Game() = default;
+    class Game
+    {
+        public:
+        Game();
+        ~Game() = default;
 
-		void handleInput();
-		void update();
-		void render();
+        void update();
+        void render();
 
-		Window* getWindow() { return &m_window; }
-		sf::Time getElapsed() const { return m_elapsed; }
+        Window* getWindow();
+        sf::Time getElapsed() const;
 
-		void restartClock();
+        void restartClock();
 
-	private:
-
-		Window m_window;
-		sf::Clock m_clock;
-		sf::Time m_elapsed;
-	};
+        private:
+        Window m_window;
+        sf::Clock m_clock;
+        sf::Time m_elapsed;
+    };
 }
 
 #endif // !GAME_H
