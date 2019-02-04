@@ -173,7 +173,7 @@ namespace SExE
         }
     }
 
-    sf::Vector2i EventManager::getMousePos(sf::RenderWindow* t_window = nullptr) const
+    sf::Vector2i EventManager::getMousePos(sf::RenderWindow* t_window) const
     {
         return (t_window ? sf::Mouse::getPosition(*t_window) : sf::Mouse::getPosition());
     }

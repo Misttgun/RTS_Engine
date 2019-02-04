@@ -17,7 +17,7 @@ namespace Engine
 
 		friend std::stringstream& operator >>(std::stringstream& t_stream, BaseComponent& t_base)
 		{
-			t_base.ReadIn(t_stream);
+			t_base.readIn(t_stream);
 			return t_stream;
 		}
 
