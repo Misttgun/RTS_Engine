@@ -12,40 +12,48 @@ namespace SExE
     class Window
     {
         public:
-        Window();
-        Window(const std::string& t_title, const sf::Vector2u& t_size);
-        ~Window();
+            // - constructor / destructor section
+            Window();
+            Window(const Window& w);
+            Window(const std::string& t_title, const sf::Vector2u& t_size);
+            ~Window();
 
-        void beginDraw();
-        void endDraw();
+            // - drawing section
+            void beginDraw();
+            void endDraw();
+            void draw(const sf::Drawable& t_drawable);
 
-        void update();
+            // - window special event section
+            void toggleFullscreen(EventDetails* t_details);
+            void close(EventDetails* t_details = nullptr);
 
-        bool isDone() const;
-        bool isFullScreen() const;
-        bool isFocused() const;
+            // - input section
+            void handleInput();
 
-        void toggleFullscreen(EventDetails* t_details);
-        void close(EventDetails* t_details = nullptr);
+            // - propagation section
+            bool pollEvent(sf::Event& e) { return m_window.pollEvent(e); }
 
-        void draw(sf::Drawable& t_drawable);
-
-        sf::RenderWindow* getRenderWindow();
-        EventManager* getEventManager();
-        sf::Vector2u getWindowSize() const;
+            // - getter / setters section
+            bool isDone() const;
+            bool isFullScreen() const;
+            bool isFocused() const;
+            sf::RenderWindow* getRenderWindow();
+            EventManager* getEventManager();
+            sf::Vector2u getWindowSize() const;
 
         private:
-        void setup(const std::string& t_title, const sf::Vector2u& t_size);
-        void destroy();
-        void create();
+            // - internal method section
+            void setup(const std::string& t_title, const sf::Vector2u& t_size);
+            void destroy();
+            void create();
 
-        sf::RenderWindow m_window;
-        EventManager m_eventManager;
-        sf::Vector2u m_windowSize;
-        std::string m_windowTitle;
-        bool m_isDone;
-        bool m_isFullscreen;
-        bool m_isFocused;
+            sf::RenderWindow m_window;
+            EventManager m_eventManager;
+            sf::Vector2u m_windowSize;
+            std::string m_windowTitle;
+            bool m_isDone;
+            bool m_isFullscreen;
+            bool m_isFocused;
     };
 }
 

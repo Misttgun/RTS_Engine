@@ -1,24 +1,24 @@
-#include <SFML/Graphics.hpp>
+#include <iostream>
+
+#include "Engine.h"
 
 int main()
-{
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+{   
+    SExE::Engine engine;
 
-    while (window.isOpen())
+    if (!engine.init())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear();
-        window.draw(shape);
-        window.display();
+        std::cout << "FAILED TO INIT THE ENGINE\n";
+        return EXIT_FAILURE;
     }
 
-    return 0;
+    SExE::Engine::getGame()->run();
+
+    if (!engine.terminate())
+    {
+        std::cout << "FAILED TO TERMINATE THE ENGINE\n";
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }

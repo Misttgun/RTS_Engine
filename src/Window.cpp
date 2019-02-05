@@ -2,9 +2,19 @@
 
 namespace SExE
 {
+    // - constructor / destructor section
     Window::Window()
     {
         setup("Window", sf::Vector2u(640, 480));
+    }
+
+    Window::Window(const Window& w)
+    {
+        setup(sf::String(w.m_windowTitle), sf::Vector2u(w.m_windowSize.x, w.m_windowSize.y));
+        m_eventManager = w.m_eventManager;
+        m_isDone = w.m_isDone;
+        m_isFullscreen = w.m_isFullscreen;
+        m_isFocused = w.m_isFocused;
     }
 
     Window::Window(const std::string & t_title, const sf::Vector2u & t_size)
@@ -17,6 +27,8 @@ namespace SExE
         destroy();
     }
 
+    // - drawing section
+
     void Window::beginDraw()
     {
         m_window.clear(sf::Color::Black);
@@ -27,20 +39,45 @@ namespace SExE
         m_window.display();
     }
 
-    void Window::update()
+    void Window::draw(const sf::Drawable & t_drawable)
+    {
+        m_window.draw(t_drawable);
+    }
+
+    // - window special event section
+    void Window::toggleFullscreen(EventDetails * t_details)
+    {
+        m_isFullscreen = !m_isFullscreen;
+        destroy();
+        create();
+    }
+
+    void Window::close(EventDetails * t_details)
+    {
+        m_isDone = true;
+    }
+
+    // - input section
+    void Window::handleInput()
     {
         sf::Event event {};
-        while(m_window.pollEvent(event))
+        while (m_window.pollEvent(event))
         {
-            if(event.type == sf::Event::LostFocus)
+            if (event.type == sf::Event::LostFocus)
             {
                 m_isFocused = false;
                 m_eventManager.setFocus(false);
             }
-            else if(event.type == sf::Event::GainedFocus)
+
+            else if (event.type == sf::Event::GainedFocus)
             {
                 m_isFocused = true;
                 m_eventManager.setFocus(true);
+            }
+
+            else if (event.type == sf::Event::Closed)
+            {
+                close();
             }
 
             m_eventManager.handleEvent(event);
@@ -48,6 +85,9 @@ namespace SExE
 
         m_eventManager.update();
     }
+
+    // getter / setter section
+
 
     bool Window::isDone() const
     {
@@ -64,23 +104,6 @@ namespace SExE
         return m_isFocused;
     }
 
-    void Window::toggleFullscreen(EventDetails * t_details)
-    {
-        m_isFullscreen = !m_isFullscreen;
-        destroy();
-        create();
-    }
-
-    void Window::close(EventDetails * t_details)
-    {
-        m_isDone = true;
-    }
-
-    void Window::draw(sf::Drawable & t_drawable)
-    {
-        m_window.draw(t_drawable);
-    }
-
     sf::RenderWindow* Window::getRenderWindow()
     {
         return &m_window;
@@ -95,6 +118,8 @@ namespace SExE
     {
         return m_windowSize;
     }
+
+    // - internal method section
 
     void Window::setup(const std::string & t_title, const sf::Vector2u & t_size)
     {

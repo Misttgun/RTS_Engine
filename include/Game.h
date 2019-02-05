@@ -2,29 +2,44 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <memory>
+
 #include "Window.h"
 
 namespace SExE
 {
+    // - handle logic of the game
     class Game
     {
         public:
-        Game();
-        ~Game() = default;
+            // - constructor / destructor section
+            Game();
+            ~Game() = default;
 
-        void update();
-        void render();
+            // - main loop
+            void run();
 
-        Window* getWindow();
-        sf::Time getElapsed() const;
+            // - update section
+            void update();
+            void fixedUpdate();
+            void render(const std::shared_ptr<Window> p_window, const sf::Drawable& shape);
 
-        void restartClock();
+            // - input section (moved into Window.h)
+            /*
+            void handleInput(const std::shared_ptr<Window> p_window);
+            void handleKeyboardInput(const sf::Event& event);
+            void handleMouseInput(const sf::Event& event);
+            */
+
+            // - time section
+            sf::Time getElapsed() const;
+            void restartClock();
 
         private:
-        Window m_window;
-        sf::Clock m_clock;
-        sf::Time m_elapsed;
+            sf::Clock m_clock;
+            sf::Time m_elapsed;
+            const static sf::Time refreshTime;
     };
 }
 
-#endif // !GAME_H
+#endif
