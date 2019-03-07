@@ -12,13 +12,22 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 #Bring the headers into the project
-include_directories(include)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src/ecs)
+include_directories(${CMAKE_SOURCE_DIR}/src/state)
+include_directories(${CMAKE_SOURCE_DIR}/src/utility)
+include_directories(${CMAKE_SOURCE_DIR}/src/window)
+include_directories(${CMAKE_SOURCE_DIR}/src/threading)
+include_directories(${CMAKE_SOURCE_DIR}/src/gui)
+include_directories(${CMAKE_SOURCE_DIR}/src/input)
+include_directories(${CMAKE_SOURCE_DIR}/src/message)
+include_directories(${CMAKE_SOURCE_DIR}/src/game)
 
 #Add the headers
-file(GLOB HEADERS "include/*.h")
+file(GLOB_RECURSE HEADERS "src/*.h")
 
 #Add the sources
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 #Link SFML statically
 set(SFML_STATIC_LIBRARIES TRUE)

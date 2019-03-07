@@ -6,7 +6,7 @@
 #include <SFML/System.hpp>
 #include <sstream>
 
-namespace Engine 
+namespace SExE
 {
 	class TransformComponent: public BaseComponent
 	{
