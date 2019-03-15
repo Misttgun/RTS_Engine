@@ -21,7 +21,9 @@ file(GLOB_RECURSE HEADERS "include/*.h")
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 #Link SFML statically
-set(SFML_STATIC_LIBRARIES TRUE)
+if (WIN32)
+    set(SFML_STATIC_LIBRARIES TRUE)
+endif (WIN32)
 
 # Set SFML directory
 set(SFML_DIR "lib/SFML/lib/cmake/SFML")
