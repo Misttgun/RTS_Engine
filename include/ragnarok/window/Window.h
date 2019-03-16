@@ -8,8 +8,10 @@
 
 namespace ragnarok
 {
-    /* Class wich takes care of all window related fonctionnality 
-    (events processing, drawing, updating the screen, etc)*/
+    /**
+     * \brief Class wich takes care of all window related fonctionnality 
+    (events processing, drawing, updating the screen, etc)
+     */
     class Window
     {
         public:
@@ -32,8 +34,11 @@ namespace ragnarok
         Renderer* GetRenderer();
         EventManager* GetEventManager();
         sf::Vector2u GetWindowSize()const;
-
-        // Returns the rect representing the current view
+ 
+        /**
+         * \brief Get the current view space
+         * \return the rect representing the current view
+         */
         sf::FloatRect GetViewSpace()const;
 
         private:
