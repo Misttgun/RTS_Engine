@@ -12,16 +12,18 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 #Bring the headers into the project
-include_directories(include)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 #Add the headers
-file(GLOB HEADERS "include/*.h")
+file(GLOB_RECURSE HEADERS "include/*.h")
 
 #Add the sources
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 #Link SFML statically
-set(SFML_STATIC_LIBRARIES TRUE)
+if (WIN32)
+    set(SFML_STATIC_LIBRARIES TRUE)
+endif (WIN32)
 
 # Set SFML directory
 set(SFML_DIR "lib/SFML/lib/cmake/SFML")

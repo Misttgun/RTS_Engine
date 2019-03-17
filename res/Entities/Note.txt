@@ -1,0 +1,33 @@
+// First you put the name of the entity
+Name Player
+
+// Second you calculate the bitmask depending on the number of component (2^7) - 1 = 255 whixh is the max 
+Attributes 255
+
+// You then populate the components
+// All the IDs and meaning are found in ecs/ECSTypes.h
+|Component|ID|Individual attributes|
+
+// ID 0 is the position component (pos.x, pos.y, elevation)
+Component 0 0 0 1
+
+// ID 1 is the spritesheet component (name of spritesheet)
+Component 1 Player
+
+// ID 2 is the state component (entity state found in ecs/components/C_State.h)
+Component 2 0
+
+// ID 3 is the movable component (velocity, direction found in types/Directions.h)
+Component 3 128.0 1
+
+// ID 4 is the controller component
+Component 4
+
+// ID 5 is the collidable component (widht, height, offset.x, offset.y, origin found in ecs/compnoents/C_Collidable)
+Component 5 20.0 20.0 0.0 0.0 2
+
+// ID 6 is the sound emitter component (sound name found in res/sounds, frame start, frame end)
+Component 6 footstep:1,4
+
+// ID 0 is the sound listener component
+Component 7
