@@ -1,5 +1,4 @@
 #include <iostream>
-#include <ragnarok/utilities/Utilities.h>
 #include "ragnarok/gui/GUIManager.h"
 #include "ragnarok/gui/elements/GUILabel.h"
 #include "ragnarok/gui/elements/GUIScrollbar.h"
@@ -8,6 +7,7 @@
 #include "ragnarok/gui/elements/GUISprite.h"
 #include "ragnarok/SharedContext.h"
 #include "ragnarok/window/Window.h"
+#include "ragnarok/utilities/Utilities.h"
 
 namespace ragnarok
 {

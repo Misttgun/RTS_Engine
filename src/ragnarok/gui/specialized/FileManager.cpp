@@ -1,15 +1,15 @@
-#include <ragnarok/utilities/Utilities.h>
-#include <iostream>
 #include "ragnarok/gui/specialized/FileManager.h"
 #include "ragnarok/gui/GUIManager.h"
 #include "ragnarok/states/StateManager.h"
 #include "ragnarok/utilities/Helpers.h"
 #include "ragnarok/events/EventManager.h"
+#include "ragnarok/utilities/Utilities.h"
+#include <iostream>
 
 namespace ragnarok
 {
-    GUIFileManager::GUIFileManager(std::string t_name, GUIManager* t_guiMgr, StateManager* t_stateMgr)
-        : m_guiManager(t_guiMgr), m_stateMgr(t_stateMgr), m_name(t_name), m_saveMode(false)
+    GUIFileManager::GUIFileManager(const std::string& t_name, GUIManager* t_guiMgr, StateManager* t_stateMgr)
+        : m_name(t_name), m_guiManager(t_guiMgr), m_stateMgr(t_stateMgr), m_saveMode(false)
     {
         m_guiManager->LoadInterface("FileManager.interface", t_name);
         m_interface = m_guiManager->GetInterface(t_name);
@@ -44,12 +44,16 @@ namespace ragnarok
 
     void GUIFileManager::HandleEntries(EventDetails* t_details)
     {
+        // If directory, change current directory
         if(t_details->m_guiElement.find("FEntry_") != std::string::npos)
         {
             std::string path = m_dir + m_interface->GetElement(t_details->m_guiElement)->GetText() + "\\";
             SetDirectory(path);
+
+            //Reset the scrolling to adapt to the new content
             m_interface->UpdateScrollVertical(0);
         }
+        // If file, change the text to the filename
         else if(t_details->m_guiElement.find("Entry_") != std::string::npos)
         {
             m_interface->GetElement("FileName")->SetText(m_interface->GetElement(t_details->m_guiElement)->GetText());
@@ -60,10 +64,12 @@ namespace ragnarok
     {
         if(m_actionCallback == nullptr)
         {
-            std::cout << "Action callback for file manager was not bound!" << std::endl; return;
+            std::cout << "Action callback for file manager was not bound!" << std::endl; 
+            return;
         }
 
-        auto filename = m_interface->GetElement("FileName")->GetText();
+        // Invoke the callback function with the element path as argument 
+        const auto filename = m_interface->GetElement("FileName")->GetText();
         m_actionCallback(m_dir + filename);
     }
 
@@ -75,21 +81,33 @@ namespace ragnarok
     void GUIFileManager::SetDirectory(std::string t_dir)
     {
         m_dir = t_dir;
-        std::replace(m_dir.begin(), m_dir.end(), '\\', '/');
+
+        // Change backslashes with forward for operating system compatibility issues
+        std::replace(m_dir.begin(), m_dir.end(), '\\', '/'); 
+
+        //Clear the interface of previous files and directories
         m_interface->RemoveElementsContaining("Entry_");
+
+        //Populate the interfaces with the new list
         ListFiles();
     }
 
     void GUIFileManager::ListFiles()
     {
+        // Get the full path to the current directory
         m_interface->GetElement("Directory")->SetText(m_dir);
+
+        // Get all the files in directory and sort it in alphabetic order
         auto list = Utils::GetFileList(m_dir, "*.*", true);
         Utils::SortFileList(list);
-        auto ParentDir = m_interface->GetElement("ParentDir");
-        float x = ParentDir->GetPosition().x;
+
+        // Determine the starting coordinates of the first element
+        const auto ParentDir = m_interface->GetElement("ParentDir");
+        const float x = ParentDir->GetPosition().x;
         float y = ParentDir->GetPosition().y + ParentDir->GetSize().y + 1.f;
         size_t i = 0;
 
+        // Populating the interface with the appropriate name and style
         for(auto& file : list)
         {
             if(file.first == "." || file.first == "..")
@@ -110,16 +128,20 @@ namespace ragnarok
 
     void GUIFileManager::ParentDirCallback(EventDetails* t_details)
     {
-        auto i = m_dir.find_last_of("/", m_dir.length() - 2);
+        // Find the last instance of a forward slash
+        const auto i = m_dir.find_last_of('/', m_dir.length() - 2);
 
         if(i != std::string::npos)
         {
-            std::string dir = m_dir.substr(0U, i + 1);
+            // Find the parent directory path
+            const std::string dir = m_dir.substr(0U, i + 1);
+
+            // Change the current directory to the parent
             SetDirectory(dir);
         }
     }
 
-    void GUIFileManager::Hide()
+    void GUIFileManager::Hide() const
     {
         m_interface->SetActive(false);
     }
