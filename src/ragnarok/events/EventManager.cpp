@@ -3,6 +3,7 @@
 #include "ragnarok/utilities/Utilities.h"
 #include <iostream>
 #include <fstream>
+#include "ragnarok/gui/GUIEvent.h"
 
 namespace ragnarok
 {

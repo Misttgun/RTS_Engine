@@ -10,6 +10,7 @@
 
 namespace ragnarok
 {
+    struct GUIEvent;
     using Bindings = std::unordered_map<std::string, std::unique_ptr<Binding>>;
     // Callback container.
     using CallbackContainer = std::unordered_map<std::string, std::function<void(EventDetails*)>>;

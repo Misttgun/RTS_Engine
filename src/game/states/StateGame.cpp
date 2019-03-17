@@ -8,7 +8,7 @@
 #include "ragnarok/states/StateLoading.h"
 #include "ragnarok/sounds/SoundManager.h"
 
-StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager)
+StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager), m_destination(sf::Vector2f(-1, -1))
 {}
 
 StateGame::~StateGame() = default;
@@ -19,10 +19,7 @@ void StateGame::OnCreate()
     ragnarok::EventManager* evMgr = context->m_eventManager;
 
     evMgr->AddCallback("Key_Escape", &StateGame::MainMenu, this);
-    evMgr->AddCallback("Player_MoveLeft", &StateGame::PlayerMove, this);
-    evMgr->AddCallback("Player_MoveRight", &StateGame::PlayerMove, this);
-    evMgr->AddCallback("Player_MoveUp", &StateGame::PlayerMove, this);
-    evMgr->AddCallback("Player_MoveDown", &StateGame::PlayerMove, this);
+    evMgr->AddCallback("Mouse_Left", &StateGame::PlayerMove, this);
 
     const sf::Vector2u size = context->m_wind->GetWindowSize();
     m_view.setSize(static_cast<float>(size.x), static_cast<float>(size.y));
@@ -43,10 +40,7 @@ void StateGame::OnDestroy()
     ragnarok::EventManager* evMgr = context->m_eventManager;
     evMgr->RemoveCallback(ragnarok::StateType::Game, "Key_Escape");
     evMgr->RemoveCallback(ragnarok::StateType::Game, "Key_O");
-    evMgr->RemoveCallback(ragnarok::StateType::Game, "Player_MoveLeft");
-    evMgr->RemoveCallback(ragnarok::StateType::Game, "Player_MoveRight");
-    evMgr->RemoveCallback(ragnarok::StateType::Game, "Player_MoveUp");
-    evMgr->RemoveCallback(ragnarok::StateType::Game, "Player_MoveDown");
+    evMgr->RemoveCallback(ragnarok::StateType::Game, "Mouse_Left");
 
     context->m_gameMap->PurgeMap();
     context->m_gameMap->GetTileSet()->Purge();
@@ -55,6 +49,14 @@ void StateGame::OnDestroy()
 void StateGame::Update(const sf::Time& t_time)
 {
     auto context = m_stateMgr->GetContext();
+    const auto pos = m_stateMgr->GetContext()->m_entityManager->GetComponent<ragnarok::C_Position>(m_player, ragnarok::Component::Position);
+
+    if (static_cast<sf::Vector2i>(pos->GetPosition()) != static_cast<sf::Vector2i>(m_destination) && m_destination != sf::Vector2f(-1, -1))
+    {
+        const auto diff = m_destination - pos->GetPosition();
+        MovementLogic(diff);
+    }
+
     UpdateCamera();
     context->m_gameMap->Update(t_time.asSeconds());
     context->m_systemManager->Update(t_time.asSeconds());
@@ -62,7 +64,7 @@ void StateGame::Update(const sf::Time& t_time)
 
 void StateGame::UpdateCamera()
 {
-    if(m_player == -1)
+    if (m_player == -1)
     {
         return;
     }
@@ -75,33 +77,63 @@ void StateGame::UpdateCamera()
 
     const sf::FloatRect viewSpace = context->m_wind->GetViewSpace();
 
-    if(viewSpace.left <= 0)
+    if (viewSpace.left <= 0)
     {
         m_view.setCenter(viewSpace.width / 2, m_view.getCenter().y);
         context->m_wind->GetRenderWindow()->setView(m_view);
     }
-    else if(viewSpace.left + viewSpace.width > (context->m_gameMap->GetMapSize().x) * ragnarok::Sheet::Tile_Size)
+    else if (viewSpace.left + viewSpace.width > (context->m_gameMap->GetMapSize().x) * ragnarok::Sheet::Tile_Size)
     {
         m_view.setCenter(((context->m_gameMap->GetMapSize().x) * ragnarok::Sheet::Tile_Size) - (viewSpace.width / 2), m_view.getCenter().y);
         context->m_wind->GetRenderWindow()->setView(m_view);
     }
 
-    if(viewSpace.top <= 0)
+    if (viewSpace.top <= 0)
     {
         m_view.setCenter(m_view.getCenter().x, viewSpace.height / 2);
         context->m_wind->GetRenderWindow()->setView(m_view);
     }
-    else if(viewSpace.top + viewSpace.height > (context->m_gameMap->GetMapSize().y) * ragnarok::Sheet::Tile_Size)
+    else if (viewSpace.top + viewSpace.height > (context->m_gameMap->GetMapSize().y) * ragnarok::Sheet::Tile_Size)
     {
         m_view.setCenter(m_view.getCenter().x, ((context->m_gameMap->GetMapSize().y) * ragnarok::Sheet::Tile_Size) - (viewSpace.height / 2));
         context->m_wind->GetRenderWindow()->setView(m_view);
     }
 }
 
+void StateGame::MovementLogic(const sf::Vector2f& t_delta) const
+{
+    ragnarok::Message msgx(static_cast<ragnarok::MessageType>(ragnarok::EntityMessage::Move));
+    msgx.m_receiver = m_player;
+
+    if (static_cast<int>(t_delta.x) > 0)
+    {
+        msgx.m_int = static_cast<int>(ragnarok::Direction::Right);
+    }
+    else if (static_cast<int>(t_delta.x) < 0)
+    {
+        msgx.m_int = static_cast<int>(ragnarok::Direction::Left);
+    }
+
+    ragnarok::Message msgy(static_cast<ragnarok::MessageType>(ragnarok::EntityMessage::Move));
+    msgy.m_receiver = m_player;
+
+    if (static_cast<int>(t_delta.y) > 0)
+    {
+        msgy.m_int = static_cast<int>(ragnarok::Direction::Down);
+    }
+    else if (static_cast<int>(t_delta.y) < 0)
+    {
+        msgy.m_int = static_cast<int>(ragnarok::Direction::Up);
+    }
+
+    m_stateMgr->GetContext()->m_systemManager->GetMessageHandler()->Dispatch(msgx);
+    m_stateMgr->GetContext()->m_systemManager->GetMessageHandler()->Dispatch(msgy);
+}
+
 void StateGame::Draw()
 {
     auto context = m_stateMgr->GetContext();
-    for(unsigned int i = 0; i < ragnarok::Sheet::Num_Layers; ++i)
+    for (unsigned int i = 0; i < ragnarok::Sheet::Num_Layers; ++i)
     {
         context->m_gameMap->Draw(i);
         m_stateMgr->GetContext()->m_systemManager->Draw(m_stateMgr->GetContext()->m_wind, i);
@@ -126,25 +158,11 @@ void StateGame::Deactivate()
 
 void StateGame::PlayerMove(ragnarok::EventDetails* t_details)
 {
-    ragnarok::Message msg(static_cast<ragnarok::MessageType>(ragnarok::EntityMessage::Move));
-
-    if(t_details->m_name == "Player_MoveLeft")
+    if (t_details->m_name == "Mouse_Left")
     {
-        msg.m_int = static_cast<int>(ragnarok::Direction::Left);
+        const auto context = m_stateMgr->GetContext();
+        ragnarok::Window* window = context->m_wind;
+        const sf::Vector2i mousePos = context->m_eventManager->GetMousePos(window->GetRenderWindow());
+        m_destination = window->GetRenderWindow()->mapPixelToCoords(mousePos);
     }
-    else if(t_details->m_name == "Player_MoveRight")
-    {
-        msg.m_int = static_cast<int>(ragnarok::Direction::Right);
-    }
-    else if(t_details->m_name == "Player_MoveUp")
-    {
-        msg.m_int = static_cast<int>(ragnarok::Direction::Up);
-    }
-    else if(t_details->m_name == "Player_MoveDown")
-    {
-        msg.m_int = static_cast<int>(ragnarok::Direction::Down);
-    }
-
-    msg.m_receiver = m_player;
-    m_stateMgr->GetContext()->m_systemManager->GetMessageHandler()->Dispatch(msg);
 }

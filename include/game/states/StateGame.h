@@ -23,5 +23,7 @@ public:
 
 private:
 	void UpdateCamera();
+    void MovementLogic(const sf::Vector2f& t_delta) const;
 	int m_player;
+    sf::Vector2f m_destination;
 };
