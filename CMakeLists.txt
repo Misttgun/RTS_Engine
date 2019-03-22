@@ -18,7 +18,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB_RECURSE HEADERS "include/*.h")
 
 #Add the sources
-file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE ENGINE_SOURCES "src/ragnarok/*.cpp")
+file(GLOB_RECURSE GAME_SOURCES "src/game/*.cpp")
 
 #Link SFML statically
 if (WIN32)
@@ -35,7 +36,10 @@ if(UNIX)
     include_directories(${X11_INCLUDE_DIR})
 endif(UNIX)
 
-add_executable(RTS_Engine ${SOURCES} ${HEADERS})
+# GUI test target
+add_executable(GUI_Test ${ENGINE_SOURCES} ${HEADERS} src/game/states/StateMainMenu.cpp include/ragnarok/gui/test_main.cpp)
+
+add_executable(RTS_Engine ${ENGINE_SOURCES} ${GAME_SOURCES} ${HEADERS})
 
 # Copy SFML libs and ressources to Output path
 add_custom_command (
@@ -44,3 +48,4 @@ add_custom_command (
 )
 
 target_link_libraries(RTS_Engine sfml-network sfml-audio sfml-graphics sfml-window sfml-system)
+target_link_libraries(GUI_Test sfml-network sfml-audio sfml-graphics sfml-window sfml-system)
