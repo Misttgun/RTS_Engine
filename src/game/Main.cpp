@@ -1,6 +1,6 @@
 #include "game/Game.h"
 
-void main()
+int main()
 {
     {
         Game game;
@@ -11,4 +11,6 @@ void main()
             game.LateUpdate();
         }
     }
+
+    return EXIT_SUCCESS;
 }

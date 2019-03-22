@@ -313,21 +313,21 @@ namespace ragnarok
 
     bool SoundManager::IsPlaying(const SoundID& t_id) const
     {
-        auto& container = m_audio.find(m_currentState);
+        const auto& container = m_audio.find(m_currentState);
 
         if(container == m_audio.end())
         {
             return false;
         }
 
-        auto& sound = container->second.find(t_id);
+        const auto& sound = container->second.find(t_id);
 
         return(sound != container->second.end() ? (sound->second.second->getStatus() != sf::SoundSource::Status::Stopped) : false);
     }
 
     SoundProps* SoundManager::GetSoundProperties(const std::string& t_soundName)
     {
-        auto& properties = m_properties.find(t_soundName);
+        auto properties = m_properties.find(t_soundName);
 
         if(properties == m_properties.end())
         {

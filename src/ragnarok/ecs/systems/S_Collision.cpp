@@ -1,3 +1,4 @@
+#include <cmath>
 #include "ragnarok/ecs/systems/S_Collision.h"
 #include "ragnarok/ecs/core/SystemManager.h"
 #include "ragnarok/map/Map.h"
