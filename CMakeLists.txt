@@ -23,12 +23,17 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 #Link SFML statically
 if (WIN32)
     set(SFML_STATIC_LIBRARIES TRUE)
+# Set SFML directory
+    set(SFML_DIR "lib/SFML/lib/cmake/SFML")
 endif (WIN32)
 
-# Set SFML directory
-set(SFML_DIR "lib/SFML/lib/cmake/SFML")
-
 find_package(SFML 2.5 COMPONENTS network audio graphics window system REQUIRED)
+
+if(UNIX)
+    find_package(X11 REQUIRED)
+    link_libraries(${X11_LIBRARIES})
+    include_directories(${X11_INCLUDE_DIR})
+endif(UNIX)
 
 add_executable(RTS_Engine ${SOURCES} ${HEADERS})
 
