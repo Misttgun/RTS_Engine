@@ -329,6 +329,10 @@ namespace ragnarok
         SetState(GUIElementState::Neutral);
     }
 
+    /**
+     * Calls char handler on each text field for passed char
+     * @param t_char The character to be handled by each text field
+     */
     void GUIInterface::OnTextEntered(const char& t_char)
     {
         for(auto &itr : m_elements)
@@ -355,6 +359,9 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Calls OnFocus on all elements and adds Focus event for each active
+     */
     void GUIInterface::OnFocus()
     {
         m_guiManager->BringToFront(this);
@@ -384,6 +391,9 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Calls OnDefocus on all elements and adds Defocus event for each active
+     */
     void GUIInterface::OnDefocus()
     {
         if(!m_focused)
@@ -410,6 +420,10 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Calls arrow key handler on all text fields for handling passed event
+     * @param t_eventName The event to be handled by all the text fields
+     */
     void GUIInterface::OnArrowKey(const std::string& t_eventName)
     {
         for(auto &itr : m_elements)
@@ -541,6 +555,9 @@ namespace ragnarok
         return m_movable;
     }
 
+    /**
+     * Initiates interface movement if possible, using mouse position
+     */
     void GUIInterface::BeginMoving()
     {
         if(!m_showTitleBar || !m_movable)
@@ -705,6 +722,10 @@ namespace ragnarok
         m_showTitleBar = !m_showTitleBar;
     }
 
+    /**
+     * Adjusts content size using passed or all elements, redraws if necessary
+     * @param t_reference The GUI element to use as a reference for size
+     */
     void GUIInterface::AdjustContentSize(const GUIElement* t_reference)
     {
         if(t_reference)
@@ -804,6 +825,9 @@ namespace ragnarok
         m_contentPositionOffset = t_offset; m_content.setPosition(GetPosition() + t_offset);
     }
 
+    /**
+     * Calls OnDefocus on all text fields and adds Defocus event for each active
+     */
     void GUIInterface::DefocusTextfields()
     {
         GUIEvent event;
