@@ -68,6 +68,11 @@ namespace ragnarok
         return(itr != m_elements.end() ? itr->second.get() : nullptr);
     }
 
+    /**
+     * Removes a GUI element by name and adjusts content size
+     * @param t_name The name of the GUI element to remove from this interface
+     * @return true upon success, false if the element was not found
+     */
     bool GUIInterface::RemoveElement(const std::string& t_name)
     {
         auto itr = m_elements.find(t_name);
@@ -122,6 +127,11 @@ namespace ragnarok
         return m_guiManager;
     }
 
+    /**
+     * Returns whether passed point is inside this interface
+     * @param t_point The point to be tested
+     * @return true if the point is within this interface's borders, else false
+     */
     bool GUIInterface::IsInside(const sf::Vector2f& t_point) const
     {
         if(GUIElement::IsInside(t_point))
@@ -502,6 +512,10 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Draws this interface to the passed render target
+     * @param t_target The render target to use for drawing
+     */
     void GUIInterface::Draw(sf::RenderTarget* t_target)
     {
         t_target->draw(m_backdrop);
@@ -545,6 +559,10 @@ namespace ragnarok
         m_beingMoved = false;
     }
 
+    /**
+     * Returns this interface's position relative to the screen
+     * @return This interface's global position
+     */
     sf::Vector2f GUIInterface::GetGlobalPosition() const
     {
         sf::Vector2f pos = m_position;
