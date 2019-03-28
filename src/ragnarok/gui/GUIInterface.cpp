@@ -110,6 +110,11 @@ namespace ragnarok
         return true;
     }
 
+    /**
+     * Removes all GUI elements with a name containing passed snippet
+     * @param t_snippet The string to search for in the elements' names
+     * @return True if at least one matching element was found, else false
+     */
     bool GUIInterface::RemoveElementsContaining(const std::string& t_snippet)
     {
         bool changed = false;
@@ -301,6 +306,13 @@ namespace ragnarok
         SetState(GUIElementState::Clicked);
     }
 
+    /**
+     * Calls all element release handlers
+     *
+     * Adds "Release" event to GUI manager once for this interface and once for
+     * each element, calls release handler for each elements and finally sets
+     * state to "Focused".
+     */
     void GUIInterface::OnRelease()
     {
         GUIEvent event;
