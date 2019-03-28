@@ -20,6 +20,10 @@ namespace ragnarok
     GUIInterface::~GUIInterface()
     {}
 
+    /**
+     * Moves the whole interface and its content to passed position
+     * @param t_pos The new position for the interface
+     */
     void GUIInterface::SetPosition(const sf::Vector2f& t_pos)
     {
         GUIElement::SetPosition(t_pos);
@@ -30,6 +34,9 @@ namespace ragnarok
         m_visual.m_text.setPosition(m_titleBar.getPosition() + m_style[m_state].m_textPadding);
     }
 
+    /**
+     * Centers this interface in the window
+     */
     void GUIInterface::PositionCenterScreen()
     {
         auto size = m_style[m_state].m_size;
@@ -37,6 +44,14 @@ namespace ragnarok
         SetPosition({(w_size.x / 2) - size.x / 2, (w_size.y / 2) - size.y / 2});
     }
 
+    /**
+     * Creates a new GUI element of passed type identified by passed name
+     *
+     * This method triggers content and control redraw
+     * @param t_type The type of the element to be created
+     * @param t_name The name identifying the newly created element
+     * @return True on success, false on failure or if the name already exists
+     */
     bool GUIInterface::AddElement(const GUIElementType& t_type,
                                   const std::string& t_name)
     {
@@ -61,6 +76,11 @@ namespace ragnarok
         return true;
     }
 
+    /**
+     * Finds a GUI element by name
+     * @param t_name The name of the element to get
+     * @return The element identified by passed name if found, else nullptr
+     */
     GUIElement* GUIInterface::GetElement(const std::string& t_name) const
     {
         auto itr = m_elements.find(t_name);
@@ -157,6 +177,10 @@ namespace ragnarok
         return m_focused;
     }
 
+    /**
+     * Reads some configuration info for this interface from passed stream
+     * @param t_stream The stream from which to read the configuration info
+     */
     void GUIInterface::ReadIn(std::stringstream& t_stream)
     {
         std::string movableState;
@@ -177,6 +201,11 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Returns whether passed point is contained within content region
+     * @param t_point The point to be tested
+     * @return True if the point is inside the content rectangle, else false
+     */
     bool GUIInterface::ContentLayerContainsPoint(const sf::Vector2f& t_point)
     {
         auto pos = GetGlobalPosition();
@@ -191,6 +220,13 @@ namespace ragnarok
         return rect.contains(t_point);
     }
 
+    /**
+     * Calls all appropriate element click handlers according to passed position
+     *
+     * Defocuses text fields, calls handlers for content and controls, adds
+     * events to GUI manager and finally sets state to "Clicked".
+     * @param t_mousePos The position of the mouse cursor
+     */
     void GUIInterface::OnClick(const sf::Vector2f& t_mousePos)
     {
         DefocusTextfields();
@@ -305,6 +341,12 @@ namespace ragnarok
         SetState(GUIElementState::Focused);
     }
 
+    /**
+     * Called when the mouse cursor enters the interface area by hovering it
+     *
+     * Adds a "Hover" GUI event to GUI manager and sets state to "Focused"
+     * @param t_mousePos The position of the mouse cursor
+     */
     void GUIInterface::OnHover(const sf::Vector2f& t_mousePos)
     {
         GUIEvent event;
@@ -318,6 +360,11 @@ namespace ragnarok
         SetState(GUIElementState::Focused);
     }
 
+    /**
+     * Called when the mouse cursor leaves the interface area
+     *
+     * Adds a "Leave" GUI event to GUI manager and sets state to "Neutral"
+     */
     void GUIInterface::OnLeave()
     {
         GUIEvent event;
@@ -360,7 +407,7 @@ namespace ragnarok
     }
 
     /**
-     * Calls OnFocus on all elements and adds Focus event for each active
+     * Calls OnFocus on all elements and adds Focus event for active ones
      */
     void GUIInterface::OnFocus()
     {
@@ -392,7 +439,7 @@ namespace ragnarok
     }
 
     /**
-     * Calls OnDefocus on all elements and adds Defocus event for each active
+     * Calls OnDefocus on all elements and adds Defocus event for active ones
      */
     void GUIInterface::OnDefocus()
     {
@@ -455,6 +502,15 @@ namespace ragnarok
         m_elementPadding = t_padding;
     }
 
+    /**
+     * Updates the interface and its elements and controls
+     *
+     * Updates position if being moved, sets redraw attributes if needed, calls
+     * "Update" for all active elements, calls hover and leave callbacks for all
+     * active elements and notifies GUI manager of hover/leave through GUI
+     * events.
+     * @param t_dT The delta time, in seconds
+     */
     void GUIInterface::Update(float t_dT)
     {
         auto mousePos = sf::Vector2f(
