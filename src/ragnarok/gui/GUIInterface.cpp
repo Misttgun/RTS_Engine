@@ -660,6 +660,9 @@ namespace ragnarok
         return pos;
     }
 
+    /**
+     * Applies current style for all visuals and the title bar
+     */
     void GUIInterface::ApplyStyle()
     {
         GUIElement::ApplyStyle(); // Call base method.
@@ -672,6 +675,12 @@ namespace ragnarok
         m_visual.m_glyph.setPosition(m_titleBar.getPosition() + m_style[m_state].m_glyphPadding);
     }
 
+    /**
+     * Applies style and redraws background on the backdrop texture
+     *
+     * Recreates backdrop texture if its size has changed. Sets redraw flag to
+     * false. Applies style size as backdrop texture rect.
+     */
     void GUIInterface::Redraw()
     {
         if(m_backdropTexture->getSize().x != m_style[m_state].m_size.x ||
@@ -703,6 +712,13 @@ namespace ragnarok
         return m_contentRedraw;
     }
 
+    /**
+     * Redraws all content elements on the content texture, applying scrolling
+     *
+     * Recreates content texture if its size has changed. Sets redraw flags to
+     * false. Applies element style before drawing. Applies style size as
+     * content texture rect if needed.
+     */
     void GUIInterface::RedrawContent()
     {
         if(m_contentTexture->getSize().x != m_contentSize.x ||
@@ -747,6 +763,13 @@ namespace ragnarok
         return m_controlRedraw;
     }
 
+    /**
+     * Redraws all control elements on the control texture
+     *
+     * Recreates control texture if its size has changed. Sets redraw flags to
+     * false. Applies element style before drawing. Applies style size as
+     * control texture rect.
+     */
     void GUIInterface::RedrawControls()
     {
         if(m_controlTexture->getSize().x != m_style[m_state].m_size.x ||
@@ -842,6 +865,10 @@ namespace ragnarok
         m_contentSize = t_vec;
     }
 
+    /**
+     * Updates horizontal scrolling to passed percentage, updating content rect
+     * @param t_percent The new horizontal scroll percentage
+     */
     void GUIInterface::UpdateScrollHorizontal(unsigned int t_percent)
     {
         if(t_percent > 100)
@@ -855,6 +882,10 @@ namespace ragnarok
         m_content.setTextureRect(sf::IntRect(m_scrollHorizontal, m_scrollVertical, rect.width, rect.height));
     }
 
+    /**
+     * Updates vertical scrolling to passed percentage, updating content rect
+     * @param t_percent The new vertical scroll percentage
+     */
     void GUIInterface::UpdateScrollVertical(unsigned int t_percent)
     {
         if(t_percent > 100)
