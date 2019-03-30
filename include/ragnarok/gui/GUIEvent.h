@@ -24,6 +24,11 @@ namespace ragnarok
         float x, y;
     };
 
+    /**
+     * Identifies a GUI event for a specific element in a specific interface
+     *
+     * Contains the GUI element name, interface name, event type and coordinates
+     */
     struct GUIEvent
     {
         GUIEvent& operator=(const GUIEvent& t_rhs)
