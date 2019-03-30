@@ -17,6 +17,9 @@ namespace ragnarok
         ReleaseResources();
     }
 
+    /**
+     * Releases all resources for all styles
+     */
     void GUIElement::ReleaseResources()
     {
         for(auto &itr : m_style)
@@ -27,6 +30,13 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Registers passed style for passed state, applying it if state is current
+     *
+     * Takes care of releasing old state's resources and requiring new resources
+     * @param t_state The state to register the passed style for
+     * @param t_style The style to register for the passed state
+     */
     void GUIElement::UpdateStyle(const GUIElementState& t_state, const GUIStyle& t_style)
     {
         // Resource management.
@@ -57,6 +67,9 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Applies current style for all visuals and calls owner's AdjustContentSize
+     */
     void GUIElement::ApplyStyle()
     {
         ApplyTextStyle();
@@ -74,6 +87,10 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Returns the greatest size of this element's content or style
+     * @return The max size of the visuals or the size of the current style
+     */
     sf::Vector2f GUIElement::GetContentSize() const
     {
         const GUIStyle& CurrentStyle = m_style.at(m_state);
@@ -97,6 +114,9 @@ namespace ragnarok
         return max;
     }
 
+    /**
+     * Sets text properties based on current style
+     */
     void GUIElement::ApplyTextStyle()
     {
         FontManager* fonts = m_owner->GetManager()->GetContext()->m_fontManager;
@@ -130,6 +150,9 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Sets background texture and properties based on style and own attributes
+     */
     void GUIElement::ApplyBgStyle()
     {
         TextureManager* textures = m_owner->GetManager()->GetContext()->m_textureManager;
@@ -147,6 +170,9 @@ namespace ragnarok
         m_visual.m_backgroundSolid.setPosition(m_position);
     }
 
+    /**
+     * Sets glyph texture and properties based on style and own attributes
+     */
     void GUIElement::ApplyGlyphStyle()
     {
         const GUIStyle& CurrentStyle = m_style[m_state];
@@ -165,6 +191,10 @@ namespace ragnarok
         return m_type;
     }
 
+    /**
+     * Sets state and triggers a redraw if needed
+     * @param t_state The new active state for this element
+     */
     void GUIElement::SetState(const GUIElementState& t_state)
     {
         if(m_state == t_state)
@@ -201,6 +231,10 @@ namespace ragnarok
         return m_position;
     }
 
+    /**
+     * Sets position to passed one, staying inside owner's padding as border
+     * @param t_pos The new position to assume
+     */
     void GUIElement::SetPosition(const sf::Vector2f& t_pos)
     {
         m_position = t_pos;
@@ -263,6 +297,10 @@ namespace ragnarok
         return m_active;
     }
 
+    /**
+     * Sets active boolean and triggers a redraw if needed
+     * @param t_active The new active state for this element
+     */
     void GUIElement::SetActive(const bool& t_active)
     {
         if(t_active != m_active)
@@ -286,6 +324,10 @@ namespace ragnarok
         return m_visual.m_text.getString();
     }
 
+    /**
+     * Sets text and triggers a redraw
+     * @param t_text The text to put in this element
+     */
     void GUIElement::SetText(const std::string& t_text)
     {
         m_visual.m_text.setString(t_text); SetRedraw(true);
@@ -296,6 +338,11 @@ namespace ragnarok
         return m_style.at(GUIElementState::Neutral).m_styleName;
     }
 
+    /**
+     * Returns whether passed point is inside this element
+     * @param t_point The point to test for collision
+     * @return True if the point is inside this element, false otherwise
+     */
     bool GUIElement::IsInside(const sf::Vector2f& t_point) const
     {
         sf::Vector2f position = GetGlobalPosition();
@@ -305,6 +352,10 @@ namespace ragnarok
                t_point.y <= position.y + m_style.at(m_state).m_size.y);
     }
 
+    /**
+     * Returns this element's position relative to the screen
+     * @return This element's global position
+     */
     sf::Vector2f GUIElement::GetGlobalPosition() const
     {
         sf::Vector2f position = GetPosition();
@@ -328,6 +379,10 @@ namespace ragnarok
         return position;
     }
 
+    /**
+     * Requires the texture resource with passed name to the texture manager
+     * @param t_name The name of the texture to require
+     */
     void GUIElement::RequireTexture(const std::string& t_name)
     {
         if(t_name.empty())
@@ -338,6 +393,10 @@ namespace ragnarok
         m_owner->GetManager()->GetContext()->m_textureManager->RequireResource(t_name);
     }
 
+    /**
+     * Requires the font resource with passed name to the font manager
+     * @param t_name The name of the font to require
+     */
     void GUIElement::RequireFont(const std::string& t_name)
     {
         if(t_name.empty())
@@ -348,6 +407,10 @@ namespace ragnarok
         m_owner->GetManager()->GetContext()->m_fontManager->RequireResource(t_name);
     }
 
+    /**
+     * Releases the texture resource with passed name using the texture manager
+     * @param t_name The name of the texture to release
+     */
     void GUIElement::ReleaseTexture(const std::string& t_name)
     {
         if(t_name.empty())
@@ -358,6 +421,10 @@ namespace ragnarok
         m_owner->GetManager()->GetContext()->m_textureManager->ReleaseResource(t_name);
     }
 
+    /**
+     * Releases the font resource with passed name using the font manager
+     * @param t_name The name of the font to release
+     */
     void GUIElement::ReleaseFont(const std::string& t_name)
     {
         if(t_name.empty())
