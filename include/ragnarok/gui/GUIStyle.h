@@ -14,6 +14,11 @@ namespace ragnarok
         Neutral, Focused, Clicked
     };
 
+    /**
+     * Contains style parameters for a GUI element, such as text size and color
+     *
+     * Parameters include size, as well as background, text and glyph properties
+     */
     struct GUIStyle
     {
         GUIStyle() : m_textSize(12), m_textCenterOrigin(false), m_stretchToFit(false), m_backgroundImageColor(255, 255, 255, 255)
@@ -44,6 +49,11 @@ namespace ragnarok
         sf::Vector2f m_glyphPadding;
     };
 
+    /**
+     * Contains the SFML visual elements for a GUI element
+     *
+     * Includes background rectangle / sprite, glyph sprite and text string
+     */
     struct GUIVisual
     {
         sf::RectangleShape m_backgroundSolid;
