@@ -46,6 +46,12 @@ namespace ragnarok
         m_eventMgr->RemoveCallback(StateType(0), "Key_RightArrow");
     }
 
+    /**
+     * Tries getting interface with passed name for passed state
+     * @param t_state The state for which the interface was registered
+     * @param t_name The name of the interface to search for
+     * @return The matching interface if found, otherwise nullptr
+     */
     GUIInterface* GUIManager::GetInterface(const StateType& t_state, const std::string& t_name)
     {
         auto s = m_interfaces.find(t_state);
@@ -65,6 +71,12 @@ namespace ragnarok
         return GetInterface(m_currentState, t_name);
     }
 
+    /**
+     * Tries removing interface with passed name for passed state
+     * @param t_state The state for which the interface was registered
+     * @param t_name The name of the interface to remove
+     * @return True if a matching interface was removed, false otherwise
+     */
     bool GUIManager::RemoveInterface(const StateType& t_state, const std::string& t_name)
     {
         auto s = m_interfaces.find(t_state);
@@ -98,6 +110,12 @@ namespace ragnarok
         return BringToFront(m_currentState, t_interface->GetName());
     }
 
+    /**
+     * Finds an interface by name and puts it to the front for passed state
+     * @param t_state The state for which to put the interface to the front
+     * @param t_name The name of the interface to put to the front
+     * @return True on success, false if no interface with passed name was found
+     */
     bool GUIManager::BringToFront(const StateType& t_state, const std::string& t_name)
     {
         auto state = m_interfaces.find(m_currentState);
@@ -118,6 +136,13 @@ namespace ragnarok
         return true;
     }
 
+    /**
+     * Calls HandleRelease and then sets state
+     *
+     * If passed state is equal to current one, do noting. Else, calls
+     * HandleRelease before setting the new state.
+     * @param t_state
+     */
     void GUIManager::ChangeState(const StateType& t_state)
     {
         if(m_currentState == t_state)
@@ -129,6 +154,10 @@ namespace ragnarok
         SetState(t_state);
     }
 
+    /**
+     * Removes all events and interfaces for passed state
+     * @param t_state The state for which to empty event and interface lists
+     */
     void GUIManager::RemoveState(const StateType& t_state)
     {
         m_events.erase(t_state);
@@ -140,6 +169,9 @@ namespace ragnarok
         return m_context;
     }
 
+    /**
+     * Calls Defocus on all current state's interfaces
+     */
     void GUIManager::DefocusAllInterfaces()
     {
         auto state = m_interfaces.find(m_currentState);
@@ -155,6 +187,15 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Focuses clicked interface and calls its click handler
+     *
+     * Tries to find an active interface with the mouse inside of it, focuses it
+     * and then calls its click handler method (and BeginMoving, if being moved
+     * after that). Then, sets event's processed flag and returns.
+     * If no such interface was found, defocuses last interface.
+     * @param t_details The event details
+     */
     void GUIManager::HandleClick(EventDetails* t_details)
     {
         auto state = m_interfaces.find(m_currentState);
@@ -197,6 +238,13 @@ namespace ragnarok
         state->second.back().second->Defocus();
     }
 
+    /**
+     * Calls clicked interface's release handler
+     *
+     * Tries to find an active interface with state "Clicked" and calls its
+     * release handler method (and StopMoving, if being moved after that).
+     * @param t_details The event details
+     */
     void GUIManager::HandleRelease(EventDetails* t_details)
     {
         if(t_details && t_details->m_keyCode != static_cast<int>(MouseButtonType::Left))
@@ -231,6 +279,13 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Calls focused interface's text entered handler
+     *
+     * Tries to find an active and focused interface and calls its text entered
+     * handler method with the event's entered text.
+     * @param t_details The event details
+     */
     void GUIManager::HandleTextEntered(EventDetails* t_details)
     {
         auto state = m_interfaces.find(m_currentState);
@@ -258,6 +313,13 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Calls focused interface's arrow key handler
+     *
+     * Tries to find an active and focused interface and calls its arrow key
+     * handler method with the event's arrow key.
+     * @param t_details The event details
+     */
     void GUIManager::HandleArrowKeys(EventDetails* t_details)
     {
         auto state = m_interfaces.find(m_currentState);
@@ -285,11 +347,20 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Adds passed event to current state's event list
+     * @param t_event The event to add to the event list
+     */
     void GUIManager::AddEvent(GUIEvent t_event)
     {
         m_events[m_currentState].push_back(t_event);
     }
 
+    /**
+     * Pops an event from current state's event list
+     * @param t_event The pointer for storing the popped event
+     * @return True if an event was popped, false if the event list was empty
+     */
     bool GUIManager::PollEvent(GUIEvent& t_event)
     {
         if(m_events[m_currentState].empty())
@@ -303,6 +374,15 @@ namespace ragnarok
         return true;
     }
 
+    /**
+     * Updates current state's active interfaces, calls hover / leave handler
+     *
+     * First calls HandleMovesToFront, then updates current state's active
+     * interfaces and for each interface, if the cursor is inside, calls its
+     * hover handler method as needed, else calls its leave handler method as
+     * needed.
+     * @param t_dT The delta time since last update
+     */
     void GUIManager::Update(float t_dT)
     {
         sf::Vector2i mousePos = m_eventMgr->GetMousePos(m_context->m_wind->GetRenderWindow());
@@ -349,6 +429,13 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Draws all current state's active interfaces to passed render window
+     *
+     * For each current state's active interface, calls its redraw methods as
+     * needed and then calls its draw method with passed render window.
+     * @param t_wind The render window to use for rendering
+     */
     void GUIManager::Render(sf::RenderWindow* t_wind)
     {
         auto state = m_interfaces.find(m_currentState);
@@ -416,6 +503,12 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Instanciates a new element of passed type with passed owner
+     * @param t_id The type of the element to create
+     * @param t_owner The owner of the element to create
+     * @return The newly created GUI element
+     */
     GUIElement* GUIManager::CreateElement(const GUIElementType& t_id, GUIInterface* t_owner)
     {
         if(t_id == GUIElementType::Window)
@@ -428,6 +521,17 @@ namespace ragnarok
         return (f != m_factory.end() ? f->second(t_owner) : nullptr);
     }
 
+    /**
+     * Tries adding a new interface with passed name for passed state
+     *
+     * First ensures that a list of interfaces exists for passed state, then
+     * tries to find an interface with passed name in that list. If no such
+     * interface exists, instantiates and inserts a new GUI interface into the
+     * list.
+     * @param t_state The state for which to add a new interface
+     * @param t_name The name of the new interface
+     * @return True if a new interface was created, false otherwise
+     */
     bool GUIManager::AddInterface(const StateType& t_state, const std::string& t_name)
     {
         auto s = m_interfaces.emplace(t_state, GUIInterfaces()).first;
@@ -444,11 +548,23 @@ namespace ragnarok
         return true;
     }
 
+    /**
+     * Tries adding a new interface with passed name for current state
+     * @param t_name The name of the new interface
+     * @return True if a new interface was created, false otherwise
+     */
     bool GUIManager::AddInterface(const std::string& t_name)
     {
         return AddInterface(m_currentState, t_name);
     }
 
+    /**
+     * Loads an interface from an interface file
+     * @param t_state The state for which the interface should be added
+     * @param t_interface The name of the file containing interface information
+     * @param t_name The name to give to the newly loaded interface
+     * @return True on success, false on failure
+     */
     bool GUIManager::LoadInterface(const StateType& t_state, const std::string& t_interface, const std::string& t_name)
     {
         std::ifstream file;
@@ -550,11 +666,23 @@ namespace ragnarok
         return true;
     }
 
+    /**
+     * Loads an interface from an interface file, for current state
+     * @param t_interface The name of the file containing interface information
+     * @param t_name The name to give to the newly loaded interface
+     * @return True on success, false on failure
+     */
     bool GUIManager::LoadInterface(const std::string& t_interface, const std::string& t_name)
     {
         return LoadInterface(m_currentState, t_interface, t_name);
     }
 
+    /**
+     * Loads an interface from an interface file, without adding it to any list
+     * @param t_interface A pointer to store the newly loaded interface
+     * @param t_fileName The name of the file containing interface information
+     * @return True on success, false on failure
+     */
     bool GUIManager::LoadInterface(GUIInterface* t_interface, const std::string& t_fileName)
     {
         std::ifstream file;
@@ -639,6 +767,12 @@ namespace ragnarok
         return true;
     }
 
+    /**
+     * Loads a style from style file with passed file name, for passed element
+     * @param t_file The name of the style file from which to load the style
+     * @param t_element The element on which to apply the loaded style
+     * @return True on success, false on failure
+     */
     bool GUIManager::LoadStyle(const std::string& t_file, GUIElement* t_element)
     {
         std::ifstream file;
