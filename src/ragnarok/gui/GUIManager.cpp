@@ -746,6 +746,7 @@ namespace ragnarok
 
                 if(!t_interface->AddElement(eType, name))
                 {
+                    std::cerr << "Couldn't add element " << name << " to interface " << t_interface->GetName();
                     continue;
                 }
 

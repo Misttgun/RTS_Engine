@@ -180,7 +180,15 @@ namespace ragnarok
 
         if(!CurrentStyle.m_glyph.empty())
         {
-            m_visual.m_glyph.setTexture(*textures->GetResource(CurrentStyle.m_glyph));
+            sf::Texture *texture = textures->GetResource(CurrentStyle.m_glyph);
+            if (texture != nullptr)
+            {
+                m_visual.m_glyph.setTexture(*texture);
+            }
+            else
+            {
+                std::cerr << "Couldn't get texture " << CurrentStyle.m_glyph << std::endl;
+            }
         }
 
         m_visual.m_glyph.setPosition(m_position + CurrentStyle.m_glyphPadding);
