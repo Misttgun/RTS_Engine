@@ -37,7 +37,7 @@ if(UNIX)
 endif(UNIX)
 
 # GUI test target
-add_executable(GUI_Test ${ENGINE_SOURCES} ${HEADERS} src/game/states/StateMainMenu.cpp include/ragnarok/gui/test_main.cpp)
+add_executable(GUI_Test ${ENGINE_SOURCES} ${HEADERS} src/game/states/StateMainMenu.cpp src/game/states/StateButtonTest.cpp include/ragnarok/gui/test_main.cpp)
 
 add_executable(RTS_Engine ${ENGINE_SOURCES} ${GAME_SOURCES} ${HEADERS})
 
@@ -45,6 +45,10 @@ add_executable(RTS_Engine ${ENGINE_SOURCES} ${GAME_SOURCES} ${HEADERS})
 add_custom_command (
     TARGET RTS_Engine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/res" ${CMAKE_BINARY_DIR}/$<CONFIG>/res
+)
+add_custom_command (
+        TARGET GUI_Test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/res" ${CMAKE_BINARY_DIR}/$<CONFIG>/res
 )
 
 target_link_libraries(RTS_Engine sfml-network sfml-audio sfml-graphics sfml-window sfml-system)
