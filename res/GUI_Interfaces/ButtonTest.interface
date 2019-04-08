@@ -1,4 +1,4 @@
 Interface ButtonTest MainMenu.style 0 0 Immovable NoTitle "Button Test"
 Element Label Title 100 0 MainMenuTitle.style Content "Main Menu:"
 Element Label Play 0 32 MainMenuLabel.style Content "PLAY"
-Element Sprite Quit 0 68 ButtonTestQuit.style Content
+Element Sprite Quit 0 68 ButtonTestQuit.style Content IconHuman
