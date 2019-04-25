@@ -2,10 +2,10 @@
 #ifndef BASECOMPONENT_H
 #define BASECOMPONENT_H
 
-#include "ECSTypes.h"
+#include "ECS_Types.h"
 #include <sstream>
 
-namespace SExE 
+namespace Engine 
 {
 	class BaseComponent
 	{
@@ -17,7 +17,7 @@ namespace SExE
 
 		friend std::stringstream& operator >>(std::stringstream& t_stream, BaseComponent& t_base)
 		{
-			t_base.readIn(t_stream);
+			t_base.ReadIn(t_stream);
 			return t_stream;
 		}
 
