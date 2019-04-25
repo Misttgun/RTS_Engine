@@ -4,6 +4,7 @@
 #include "ragnarok/resources/TextureManager.h"
 #include "ragnarok/resources/FontManager.h"
 #include "ragnarok/states/StateLoading.h"
+#include "ragnarok/particles/ParticleSystem.h"
 
 StateIntro::StateIntro(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager)
 {}
@@ -36,6 +37,22 @@ void StateIntro::OnCreate()
     evMgr->AddCallback("Intro_Continue", &StateIntro::Continue, this);
 
     auto loading = m_stateMgr->GetState<ragnarok::StateLoading>(ragnarok::StateType::Loading);
+    loading->SetManualContinue(false);
+    LoadFiles();
+}
+
+void StateIntro::LoadFiles()
+{
+    auto context = m_stateMgr->GetContext();
+    const std::string dir = "res/Particles/";
+    auto fileList = ragnarok::Utils::GetFileList(ragnarok::Utils::GetWorkingDirectory() + dir, "*.particle");
+    for (auto& file : fileList)
+    {
+        context->m_particles->AddFile(ragnarok::Utils::GetWorkingDirectory() + (dir + file.first));
+    }
+
+    auto loading = m_stateMgr->GetState<ragnarok::StateLoading>(ragnarok::StateType::Loading);
+    loading->AddLoader(context->m_particles);
     loading->SetManualContinue(false);
 }
 

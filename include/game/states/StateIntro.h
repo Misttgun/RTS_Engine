@@ -6,7 +6,7 @@
 
 class StateIntro : public ragnarok::BaseState
 {
-    public:
+public:
     StateIntro(ragnarok::StateManager* t_stateManager);
     ~StateIntro();
 
@@ -21,7 +21,8 @@ class StateIntro : public ragnarok::BaseState
 
     void Continue(ragnarok::EventDetails* t_details);
 
-    private:
+private:
+    void LoadFiles();
     sf::Sprite m_introSprite;
     sf::Text m_text;
     float m_timePassed;

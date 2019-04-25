@@ -1,10 +1,5 @@
 #pragma once
 
-#include <unordered_map>
-#include <map>
-#include <fstream>
-#include <sstream>
-#include <memory>
 #include <array>
 #include <SFML/Graphics.hpp>
 #include "MapDefinitions.h"
@@ -14,7 +9,6 @@
 #include "MapLoadee.h"
 #include "../resources/TextureManager.h"
 #include "../threads/FileLoader.h"
-#include "../utilities/Utilities.h"
 #include "../window/Window.h"
 #include "../ecs/core/EntityManager.h"
 

@@ -18,10 +18,8 @@
 #include "ragnarok/ecs/systems/S_SheetAnimation.h"
 #include "ragnarok/ecs/systems/S_Sound.h"
 
-Game::Game() 
-    : m_window("Chapter 2", sf::Vector2u(800, 600), false), m_entityManager(&m_systemManager, &m_textureManager),
-    m_guiManager(m_window.GetEventManager(), &m_context), m_soundManager(&m_audioManager), 
-    m_gameMap(&m_window, &m_entityManager, &m_textureManager)
+Game::Game() : m_window("Chapter 2", sf::Vector2u(800, 600), false), m_soundManager(&m_audioManager), m_guiManager(m_window.GetEventManager(), &m_context),
+m_entityManager(&m_systemManager, &m_textureManager), m_gameMap(&m_window, &m_entityManager, &m_textureManager)
 {
     SetUpClasses();
     SetUpECS();
@@ -36,7 +34,7 @@ Game::~Game()
     m_fontManager.ReleaseResource("Main");
 }
 
-sf::Time Game::GetElapsed()
+sf::Time Game::GetElapsed() const
 {
     return m_clock.getElapsedTime();
 }
@@ -59,7 +57,7 @@ void Game::Update()
     m_soundManager.Update(m_elapsed.asSeconds());
 
     ragnarok::GUIEvent guiEvent;
-    while(m_context.m_guiManager->PollEvent(guiEvent))
+    while (m_context.m_guiManager->PollEvent(guiEvent))
     {
         m_window.GetEventManager()->HandleEvent(guiEvent);
     }
@@ -68,7 +66,6 @@ void Game::Update()
 void Game::Render()
 {
     m_window.BeginDraw();
-    // Render here.
     m_stateManager->Draw();
     m_guiManager.Render(m_window.GetRenderWindow());
     m_window.EndDraw();
@@ -100,6 +97,10 @@ void Game::SetUpClasses()
 
     m_stateManager = std::make_unique<ragnarok::StateManager>(&m_context);
     m_gameMap.SetStateManager(m_stateManager.get());
+    m_particles = std::make_unique<ragnarok::ParticleSystem>(m_stateManager.get(), &m_textureManager, &m_rand, &m_gameMap);
+    m_context.m_particles = m_particles.get();
+    m_gameMap.AddLoadee(m_particles.get());
+    m_gameMap.AddLoadee(&m_entityManager);
 }
 
 void Game::SetUpECS()
@@ -131,6 +132,7 @@ void Game::SetUpStates()
     m_stateManager->AddDependent(m_context.m_eventManager);
     m_stateManager->AddDependent(&m_guiManager);
     m_stateManager->AddDependent(&m_soundManager);
+    m_stateManager->AddDependent(m_particles.get());
     m_stateManager->RegisterState<StateIntro>(ragnarok::StateType::Intro);
     m_stateManager->RegisterState<StateMainMenu>(ragnarok::StateType::MainMenu);
     m_stateManager->RegisterState<StateGame>(ragnarok::StateType::Game);

@@ -12,6 +12,7 @@
 #include "../ragnarok/ecs/core/SystemManager.h"
 #include "../ragnarok/ecs/core/EntityManager.h"
 #include "../ragnarok/gui/GUIManager.h"
+#include "../ragnarok/particles/ParticleSystem.h"
 
 class Game
 {
@@ -23,7 +24,7 @@ class Game
     void Render();
     void LateUpdate();
 
-    sf::Time GetElapsed();
+    sf::Time GetElapsed() const;
 
     ragnarok::Window* GetWindow();
 
@@ -45,5 +46,6 @@ class Game
     ragnarok::SystemManager m_systemManager;
     ragnarok::EntityManager m_entityManager;
     ragnarok::Map m_gameMap;
+    std::unique_ptr<ragnarok::ParticleSystem> m_particles;
     std::unique_ptr<ragnarok::StateManager> m_stateManager;
 };

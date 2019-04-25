@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../ragnarok/states/BaseState.h"
 #include "../../ragnarok/events/EventManager.h"
 
@@ -19,7 +20,4 @@ class StateMainMenu : public ragnarok::BaseState
 
     void Play(ragnarok::EventDetails* t_details);
     void Quit(ragnarok::EventDetails* t_details);
-
-    private:
-
 };

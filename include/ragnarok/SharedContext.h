@@ -13,6 +13,7 @@ namespace ragnarok
     class Map;
     class GUIManager;
     class RandomGenerator;
+    class ParticleSystem;
 
     struct SharedContext
     {
@@ -27,7 +28,8 @@ namespace ragnarok
             m_entityManager(nullptr),
             m_gameMap(nullptr),
             m_guiManager(nullptr),
-            m_rand(nullptr)
+            m_rand(nullptr),
+            m_particles(nullptr)
         {}
 
         Window* m_wind;
@@ -40,6 +42,7 @@ namespace ragnarok
         EntityManager* m_entityManager;
         Map* m_gameMap;
         GUIManager* m_guiManager;
+        ParticleSystem* m_particles;
         RandomGenerator* m_rand;
     };
 }
