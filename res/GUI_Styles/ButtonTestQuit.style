@@ -1,0 +1,11 @@
+State Neutral
+Size 50 42
+BgColor 255 255 255 255
+Glyph IconHuman
+GlyphPadding 4 4
+/State
+
+State Clicked
+BgColor 255 150 0 255
+GlyphPadding 5 5
+/State
