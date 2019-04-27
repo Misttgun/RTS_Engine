@@ -148,7 +148,7 @@ namespace ragnarok
 
     GeneratorList* ParticleSystem::GetGenerators(const std::string& t_name)
     {
-        auto& itr = m_generators.find(t_name);
+        auto itr = m_generators.find(t_name);
         if (itr == m_generators.end())
         {
             return nullptr;
@@ -197,7 +197,7 @@ namespace ragnarok
         }
 
         auto f = dynamic_cast<ForceUpdater*>(m_updaters["Force"].get());
-        auto& forceItr = m_forces.find(m_currentState);
+        auto forceItr = m_forces.find(m_currentState);
         if (forceItr == m_forces.end())
         {
             f->SetApplicators(nullptr); return;

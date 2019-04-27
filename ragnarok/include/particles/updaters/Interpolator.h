@@ -2,7 +2,7 @@
 
 #include "../BaseUpdater.h"
 #include "../ParticleContainer.h"
-#include "../../Utilities/Utilities.h"
+#include "../../utilities/Utilities.h"
 
 namespace ragnarok
 {
