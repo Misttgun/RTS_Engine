@@ -9,7 +9,7 @@
 #include "map/Map.h"
 #include "../../include/states/StateGame.h"
 
-StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager), m_destination(sf::Vector2f(-1, -1))
+StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager), m_destination(sf::Vector2f(-1, -1)), m_gameClickManager(t_stateManager)
 {}
 
 StateGame::~StateGame() = default;
@@ -19,8 +19,11 @@ void StateGame::OnCreate()
     const auto context = m_stateMgr->GetContext();
     ragnarok::EventManager* evMgr = context->m_eventManager;
 
+    m_gameClickManager.addCallback("PlayerMove", &StateGame::PlayerMove, this);
+    m_gameClickManager.setupHooks(evMgr);
+
     evMgr->AddCallback("Key_Escape", &StateGame::MainMenu, this);
-    evMgr->AddCallback("Mouse_Left", &StateGame::PlayerMove, this);
+    //evMgr->addCallback("Mouse_Left", &StateGame::PlayerMove, this);
 
     const sf::Vector2u size = context->m_wind->GetWindowSize();
     m_view.setSize(static_cast<float>(size.x), static_cast<float>(size.y));
@@ -157,13 +160,7 @@ void StateGame::Activate()
 void StateGame::Deactivate()
 {}
 
-void StateGame::PlayerMove(ragnarok::EventDetails* t_details)
+void StateGame::PlayerMove(int t_entityID, sf::Vector2f t_position)
 {
-    if (t_details->m_name == "Mouse_Left")
-    {
-        const auto context = m_stateMgr->GetContext();
-        ragnarok::Window* window = context->m_wind;
-        const sf::Vector2i mousePos = context->m_eventManager->GetMousePos(window->GetRenderWindow());
-        m_destination = window->GetRenderWindow()->mapPixelToCoords(mousePos);
-    }
+    m_destination = t_position;
 }

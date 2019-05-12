@@ -2,6 +2,7 @@
 
 #include <string>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/System.hpp>
 #include <utility>
 #include "../gui/GUIEvent.h"
 
