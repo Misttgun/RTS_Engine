@@ -10,7 +10,7 @@ namespace ragnarok
 
     Tile* TileMap::SetTile(unsigned int t_x, unsigned int t_y, unsigned int t_layer, TileType t_tileType)
     {
-        auto tileInfo = m_tileSet.GetContainer().find(t_tileType);
+        const auto tileInfo = m_tileSet.GetContainer().find(t_tileType);
 
         if(tileInfo == m_tileSet.GetContainer().end())
         {
@@ -73,19 +73,19 @@ namespace ragnarok
             {
                 for(auto layer = 0; layer < Sheet::Num_Layers; ++layer)
                 {
-                    auto position = t_position + sf::Vector2i(x, y);
+                    const auto position = t_position + sf::Vector2i(x, y);
                     if(position.x >= m_maxMapSize.x || position.y >= m_maxMapSize.y)
                     {
                         continue;
                     }
 
-                    auto tile = t_map.GetTile(x, y, layer);
+                    const auto tile = t_map.GetTile(x, y, layer);
                     if(!tile)
                     {
                         continue;
                     }
                     // Empty tile. Skip it, don't overwrite the main map!
-                    auto newTile = SetTile(t_position.x + x, t_position.y + y, layer + t_startLayer, tile->m_properties->m_id); // use lower-level code to avoid having to re-fetch TileInfo struct.
+                    const auto newTile = SetTile(t_position.x + x, t_position.y + y, layer + t_startLayer, tile->m_properties->m_id); // use lower-level code to avoid having to re-fetch TileInfo struct.
                     if(!newTile)
                     {
                         std::cout << "Failed adding tile..." << std::endl; continue;
@@ -217,10 +217,10 @@ namespace ragnarok
 
         for(auto& tile : m_container)
         {
-            auto coordinateID = tile.first;
+            const auto coordinateID = tile.first;
             unsigned int x = 0, y = 0, layer = 0;
             ConvertCoords(coordinateID, x, y, layer, m_maxMapSize);
-            auto tileID = tile.second->m_properties->m_id;
+            const auto tileID = tile.second->m_properties->m_id;
 
             if(!firstLine)
             {
@@ -247,7 +247,7 @@ namespace ragnarok
             return;
         }
 
-        auto itr = m_tileSet.GetContainer().find(tileId);
+        const auto itr = m_tileSet.GetContainer().find(tileId);
 
         if(itr == m_tileSet.GetContainer().end())
         {
@@ -259,7 +259,7 @@ namespace ragnarok
         unsigned int tileLayer = 0;
         unsigned int tileSolidity = 0;
         t_stream >> tileCoords.x >> tileCoords.y >> tileLayer >> tileSolidity;
-        auto mapSize = GetMapSize();
+        const auto mapSize = GetMapSize();
         
         if(tileCoords.x > mapSize.x || tileCoords.y > mapSize.y || tileLayer >= Sheet::Num_Layers)
         {
@@ -296,7 +296,7 @@ namespace ragnarok
     Tile* TileMap::CreateTile(unsigned int t_x, unsigned int t_y, unsigned int t_layer)
     {
         auto tile = std::make_unique<Tile>();
-        auto tileAddr = tile.get();
+        const auto tileAddr = tile.get();
         
         if(!m_container.emplace(ConvertCoords(t_x, t_y, t_layer, m_maxMapSize), std::move(tile)).second)
         {

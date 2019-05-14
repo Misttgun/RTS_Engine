@@ -102,20 +102,6 @@ namespace ragnarok
         }
     }
 
-    sf::Vector2f S_Movement::GetTileFriction(unsigned int t_elevation, unsigned int t_x, unsigned int t_y) const
-    {
-        Tile* t = nullptr;
-        int elevation = t_elevation;
-
-        while (!t && elevation >= 0)
-        {
-            t = m_gameMap->GetTile(t_x, t_y, elevation);
-            --elevation;
-        }
-
-        return(t ? t->m_properties->m_friction : m_gameMap->GetDefaultTile()->m_friction);
-    }
-
     void S_Movement::MovementStep(float t_dT, C_Movable* t_movable, const C_Position* t_position) const
     {
         // Can be useful if we want to change speed based on tile friction

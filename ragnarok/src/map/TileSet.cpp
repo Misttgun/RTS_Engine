@@ -56,8 +56,10 @@ namespace ragnarok
             return true;
         }
 
-        auto tile = std::make_unique<TileInfo>(m_textureMgr->GetResource(m_textureName), tileId);
-        t_stream >> tile->m_name >> tile->m_friction.x >> tile->m_friction.y >> tile->m_deadly;
+        std::string name;
+        sf::Vector2i position;
+        t_stream >> name >> position.x >> position.y;
+        auto tile = std::make_unique<TileInfo>(m_textureMgr->GetResource(m_textureName), name, position, tileId);
 
         if(!m_tileSet.emplace(tileId, std::move(tile)).second)
         {

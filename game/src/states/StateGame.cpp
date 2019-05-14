@@ -28,7 +28,8 @@ void StateGame::OnCreate()
     m_view.zoom(0.6f);
 
     auto loading = m_stateMgr->GetState<ragnarok::StateLoading>(ragnarok::StateType::Loading);
-    context->m_gameMap->AddFile(ragnarok::Utils::GetWorkingDirectory() + "res/Maps/map1.map");
+    //context->m_gameMap->AddFile(ragnarok::Utils::GetWorkingDirectory() + "res/Maps/map1.map");
+    context->m_gameMap->AddFile(ragnarok::Utils::GetWorkingDirectory() + "res/Maps/forest.map");
     loading->AddLoader(context->m_gameMap);
     loading->SetManualContinue(true);
     context->m_soundManager->PlayMusic("TownTheme", 50.f, true);

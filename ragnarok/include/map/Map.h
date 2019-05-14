@@ -42,7 +42,7 @@ namespace ragnarok
         void AddLoadee(MapLoadee* t_loadee);
         void RemoveLoadee(MapLoadee* t_loadee);
 
-        void SaveToFile(const std::string& t_file);
+        void SaveToFile(const std::string& t_file) override;
 
         void Update(float t_dT);
         void ClearMapTexture(sf::Vector3i t_from = sf::Vector3i(0, 0, 0), sf::Vector3i t_to = sf::Vector3i(-1, -1, -1));
@@ -50,7 +50,7 @@ namespace ragnarok
         void Draw(unsigned int t_layer);
 
         protected:
-        bool ProcessLine(std::stringstream& t_stream);
+        bool ProcessLine(std::stringstream& t_stream) override;
 
         Window* m_window;
         EntityManager* m_entityManager;

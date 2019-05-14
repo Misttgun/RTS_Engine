@@ -52,15 +52,7 @@ namespace ragnarok
                 static_cast<int>(floor(t_position.y / Sheet::Tile_Size)));
 
             const auto tile = m_map->GetTile(tileCoords.x, tileCoords.y, 0);
-            sf::Vector2f friction;
-            if (!tile)
-            {
-                friction = m_map->GetDefaultTile()->m_friction;
-            }
-            else
-            {
-                friction = tile->m_properties->m_friction;
-            }
+            sf::Vector2f friction(1.0f, 1.0f);
 
             friction.x *= std::abs(t_velocity.x);
             friction.y *= std::abs(t_velocity.y);

@@ -32,14 +32,6 @@ namespace ragnarok
         void StopEntity(const EntityId& t_entity, const Axis& t_axis) const;
         void SetDirection(const EntityId& t_entity, const Direction& t_dir) const;
 
-        /**
-         * \brief Get the current tile friction
-         * \param t_elevation tile elevation
-         * \param t_x tile x position
-         * \param t_y tile y position
-         * \return return the tile friction
-         */
-        sf::Vector2f GetTileFriction(unsigned int t_elevation, unsigned int t_x, unsigned int t_y) const;
         void MovementStep(float t_dT, C_Movable* t_movable, const C_Position* t_position) const;
 
         Map* m_gameMap;

@@ -8,11 +8,10 @@
 namespace ragnarok
 {
     Map::Map(Window* t_window, EntityManager* t_entityManager, TextureManager* t_textureManager)
-        : m_window(t_window), m_textureManager(t_textureManager), m_defaultTile(nullptr),
-        m_entityManager(t_entityManager), m_tileMap({0, 0}, m_tileSet), m_playerId(-1), m_tileSet(t_textureManager),
-        m_gameTime(0.f), m_dayLength(30.f)
+        : m_window(t_window), m_entityManager(t_entityManager), m_textureManager(t_textureManager), m_tileSet(t_textureManager)
+        , m_tileMap({ 0, 0 }, m_tileSet), m_defaultTile(nullptr, "DTile", sf::Vector2i(0, 0)), m_playerId(-1), m_gameTime(0.f), m_dayLength(30.f)
     {
-        m_layerSprite.setPosition({0,0});
+        m_layerSprite.setPosition({ 0,0 });
     }
 
     Map::~Map()
@@ -69,17 +68,16 @@ namespace ragnarok
     void Map::SaveToFile(const std::string& t_file)
     {
         std::ofstream file(t_file, std::ios::out);
-        if(!file.is_open())
+        if (!file.is_open())
         {
             std::cout << "Failed to save map to location: " << t_file << std::endl; return;
         }
 
-        auto mapSize = m_tileMap.GetMapSize();
+        const auto mapSize = m_tileMap.GetMapSize();
         file << "SIZE " << mapSize.x << " " << mapSize.y << std::endl;
-        file << "DEFAULT_FRICTION " << m_defaultTile.m_friction.x << " " << m_defaultTile.m_friction.y << std::endl;
         file << "SHEET " << m_tileSet.GetName() << std::endl;
-        
-        for(auto& loadee : m_loadees)
+
+        for (auto& loadee : m_loadees)
         {
             loadee->SaveMap(file);
         }
@@ -90,48 +88,48 @@ namespace ragnarok
 
     void Map::Redraw(sf::Vector3i t_from, sf::Vector3i t_to)
     {
-        auto mapSize = m_tileMap.GetMapSize();
-        if(mapSize.x == 0 || mapSize.y == 0)
+        const auto mapSize = m_tileMap.GetMapSize();
+        if (mapSize.x == 0 || mapSize.y == 0)
         {
             return;
         }
 
-        if(t_from.x < 0 || t_from.y < 0 || t_from.z < 0)
+        if (t_from.x < 0 || t_from.y < 0 || t_from.z < 0)
         {
             return;
         }
 
-        if(t_from.x >= mapSize.x || t_from.y >= mapSize.y)
+        if (t_from.x >= mapSize.x || t_from.y >= mapSize.y)
         {
             return;
         }
 
-        sf::Vector3i originalTo = t_to;
-        if(t_to.x < 0 || t_to.x >= mapSize.x)
+        const sf::Vector3i originalTo = t_to;
+        if (t_to.x < 0 || t_to.x >= mapSize.x)
         {
             t_to.x = mapSize.x - 1;
         }
 
-        if(t_to.y < 0 || t_to.y >= mapSize.y)
+        if (t_to.y < 0 || t_to.y >= mapSize.y)
         {
             t_to.y = mapSize.y - 1;
         }
 
-        if(t_to.z < 0 || t_to.z >= Sheet::Num_Layers)
+        if (t_to.z < 0 || t_to.z >= Sheet::Num_Layers)
         {
             t_to.z = Sheet::Num_Layers - 1;
         }
 
-        auto realMapSize = mapSize * static_cast<unsigned int>(Sheet::Tile_Size);
-        
-        for(auto layer = t_from.z; layer <= t_to.z; ++layer)
+        const auto realMapSize = mapSize * static_cast<unsigned int>(Sheet::Tile_Size);
+
+        for (auto layer = t_from.z; layer <= t_to.z; ++layer)
         {
-            if(m_textures[layer].getSize() == realMapSize)
+            if (m_textures[layer].getSize() == realMapSize)
             {
                 continue;
             }
 
-            if(!m_textures[layer].create(realMapSize.x, realMapSize.y))
+            if (!m_textures[layer].create(realMapSize.x, realMapSize.y))
             {
                 std::cout << "Failed creating tile layer texture!" << std::endl;
             }
@@ -139,15 +137,15 @@ namespace ragnarok
 
         ClearMapTexture(t_from, originalTo);
 
-        for(auto x = t_from.x; x <= t_to.x; ++x)
+        for (auto x = t_from.x; x <= t_to.x; ++x)
         {
-            for(auto y = t_from.y; y <= t_to.y; ++y)
+            for (auto y = t_from.y; y <= t_to.y; ++y)
             {
-                for(auto layer = t_from.z; layer <= t_to.z; ++layer)
+                for (auto layer = t_from.z; layer <= t_to.z; ++layer)
                 {
                     auto tile = m_tileMap.GetTile(x, y, layer);
-                    
-                    if(!tile)
+
+                    if (!tile)
                     {
                         continue;
                     }
@@ -159,7 +157,7 @@ namespace ragnarok
             }
         }
 
-        for(auto layer = t_from.z; layer <= t_to.z; ++layer)
+        for (auto layer = t_from.z; layer <= t_to.z; ++layer)
         {
             m_textures[layer].display();
         }
@@ -167,31 +165,31 @@ namespace ragnarok
 
     void Map::ClearMapTexture(sf::Vector3i t_from, sf::Vector3i t_to)
     {
-        auto mapSize = m_tileMap.GetMapSize();
-        if(t_from.x < 0 || t_from.y < 0 || t_from.z < 0)
+        const auto mapSize = m_tileMap.GetMapSize();
+        if (t_from.x < 0 || t_from.y < 0 || t_from.z < 0)
         {
             return;
         }
 
-        if(t_from.x >= mapSize.x || t_from.y >= mapSize.y)
+        if (t_from.x >= mapSize.x || t_from.y >= mapSize.y)
         {
             return;
         }
 
-        auto toLayer = (t_to.z < 0 || t_to.z >= Sheet::Num_Layers ? Sheet::Num_Layers - 1 : t_to.z);
-        if(t_to.x == -1 && t_to.y == -1)
+        const auto toLayer = (t_to.z < 0 || t_to.z >= Sheet::Num_Layers ? Sheet::Num_Layers - 1 : t_to.z);
+        if (t_to.x == -1 && t_to.y == -1)
         {
             // The entire map needs to be cleared, so just invoke .clear() on desired layers.
-            for(auto layer = t_from.z; layer <= toLayer; ++layer)
+            for (auto layer = t_from.z; layer <= toLayer; ++layer)
             {
-                m_textures[layer].clear({0,0,0,0});
+                m_textures[layer].clear({ 0,0,0,0 });
             }
             return;
         }
 
         // Portion of the map needs clearing.
-        auto position = sf::Vector2i(t_from.x, t_from.y) * static_cast<int>(Sheet::Tile_Size);
-        auto size = sf::Vector2i(
+        const auto position = sf::Vector2i(t_from.x, t_from.y) * static_cast<int>(Sheet::Tile_Size);
+        const auto size = sf::Vector2i(
             ((t_to.x < 0 ? mapSize.x - 1 : t_to.x) - t_from.x) + 1,
             ((t_to.y < 0 ? mapSize.y - 1 : t_to.y) - t_from.y) + 1)
             * static_cast<int>(Sheet::Tile_Size);
@@ -201,7 +199,7 @@ namespace ragnarok
         shape.setSize(sf::Vector2f(size));
         shape.setFillColor(sf::Color(0, 0, 0, -255));
 
-        for(auto layer = t_from.z; layer <= toLayer; ++layer)
+        for (auto layer = t_from.z; layer <= toLayer; ++layer)
         {
             m_textures[layer].draw(shape, sf::BlendMultiply);
             m_textures[layer].display();
@@ -211,54 +209,50 @@ namespace ragnarok
     bool Map::ProcessLine(std::stringstream& t_stream)
     {
         std::string type;
-        if(!(t_stream >> type))
+        if (!(t_stream >> type))
         {
             return false;
         }
 
-        if(type == "TILE")
+        if (type == "TILE")
         {
             m_tileMap.ReadInTile(t_stream);
         }
-        else if(type == "SIZE")
+        else if (type == "SIZE")
         {
             sf::Vector2u mapSize;
             t_stream >> mapSize.x >> mapSize.y;
             m_tileMap.SetMapSize(mapSize);
         }
-        else if(type == "DEFAULT_FRICTION")
-        {
-            t_stream >> m_defaultTile.m_friction.x >> m_defaultTile.m_friction.y;
-        }
-        else if(type == "ENTITY")
+        else if (type == "ENTITY")
         {
             // Set up entity here.
             std::string name;
             t_stream >> name;
-            if(name == "Player" && m_playerId != -1)
+            if (name == "Player" && m_playerId != -1)
             {
                 return true;
             }
 
             int entityId = m_entityManager->AddEntity(name);
 
-            if(entityId < 0)
+            if (entityId < 0)
             {
                 return true;
             }
 
-            if(name == "Player")
+            if (name == "Player")
             {
                 m_playerId = entityId;
             }
 
             auto position = m_entityManager->GetComponent<C_Position>(entityId, Component::Position);
-            if(position)
+            if (position)
             {
                 t_stream >> *position;
             }
         }
-        else if(type == "SHEET")
+        else if (type == "SHEET")
         {
             std::string sheetName;
             t_stream >> sheetName;
@@ -268,7 +262,7 @@ namespace ragnarok
             auto loading = m_stateManager->GetState<StateLoading>(StateType::Loading);
             loading->AddLoader(&m_tileSet);
 
-            while(!m_tileSet.IsDone())
+            while (!m_tileSet.IsDone())
             {
                 std::cout << "Waiting for tile set to load..." << std::endl; sf::sleep(sf::seconds(0.5f));
             }
@@ -278,7 +272,7 @@ namespace ragnarok
             // Something else.
             std::cout << "! Passing type \"" << type << "\" to map loadees." << std::endl;
 
-            for(auto& loadee : m_loadees)
+            for (auto& loadee : m_loadees)
             {
                 loadee->ReadMapLine(type, t_stream);
             }
@@ -293,26 +287,29 @@ namespace ragnarok
 
     void Map::RemoveLoadee(MapLoadee* t_loadee)
     {
-        m_loadees.erase(std::find_if(m_loadees.begin(), m_loadees.end(),[t_loadee](MapLoadee* t_arg) { return t_arg == t_loadee; }));
+        m_loadees.erase(std::find_if(m_loadees.begin(), m_loadees.end(), [t_loadee](MapLoadee* t_arg)
+        {
+            return t_arg == t_loadee;
+        }));
     }
 
     void Map::Update(float t_dT)
     {
         m_gameTime += t_dT;
-        if(m_gameTime > m_dayLength * 2)
+        if (m_gameTime > m_dayLength * 2)
         {
             m_gameTime = 0.f;
         }
 
         float timeNormal = m_gameTime / m_dayLength;
 
-        if(timeNormal > 1.f)
+        if (timeNormal > 1.f)
         {
             timeNormal = 2.f - timeNormal;
         }
 
         auto shader = m_window->GetRenderer()->GetShader("default");
-        if(!shader)
+        if (!shader)
         {
             return;
         }
@@ -322,7 +319,7 @@ namespace ragnarok
 
     void Map::Draw(unsigned int t_layer)
     {
-        if(t_layer >= Sheet::Num_Layers)
+        if (t_layer >= Sheet::Num_Layers)
         {
             return;
         }
