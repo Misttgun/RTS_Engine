@@ -241,7 +241,7 @@ namespace ragnarok
                 return true;
             }
 
-            if (name == "Player")
+            if (name == "Player" || name == "Peon")
             {
                 m_playerId = entityId;
             }
