@@ -1,0 +1,28 @@
+//First you put the name of the spritesheet
+Texture PlayerSprite
+
+//Then you put the size of the sprite, first width then height
+Size 50 49
+
+//Rescale the sprite, first width then height
+Scale 0.75 0.75
+
+//The margin on the spritesheet.
+Padding 7.0 13.0
+
+//The space between the different sprite on the spritesheet
+Spacing 14.0 16.0
+
+//The decription of the values of the different animations
+//StartFrame : le numéro de la première sprite jouée
+//EndFrame : le numéro de la sprite ou l'animation se termine
+//Row : la ligne où on lit la première sprite
+//FrameTime : le temps (en seconde) où chaque sprite reste affichée
+|Type|Name|StartFrame|EndFrame|Row|FrameTime|FrameActionStart|FrameActionEnd|
+
+//Determine the type of animation. Always put this one
+AnimationType Directional
+
+//Les différentes animations
+Animation Idle 0 0 0 1.0 -1 -1
+Animation Walk 1 7 0 0.1 -1 -1

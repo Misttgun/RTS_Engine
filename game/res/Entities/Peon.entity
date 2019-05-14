@@ -1,0 +1,11 @@
+Name Peon
+Attributes 255
+|Component|ID|Individual attributes|
+Component 0 0 0 1
+Component 1 Peon
+Component 2 0
+Component 3 112.0 0
+Component 4
+Component 5 32.0 32.0 0.0 0.0 1
+Component 6 footstep:1,4
+Component 7
