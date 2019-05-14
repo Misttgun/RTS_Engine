@@ -1,7 +1,7 @@
 // First you put the name of the entity
 Name Player
 
-// Second you calculate the bitmask depending on the number of component (2^7) - 1 = 255 whixh is the max 
+// Second you calculate the bitmask depending on the number of component (2^8) - 1 = 255 whish is the max 
 Attributes 255
 
 // You then populate the components
@@ -23,7 +23,7 @@ Component 3 128.0 1
 // ID 4 is the controller component
 Component 4
 
-// ID 5 is the collidable component (widht, height, offset.x, offset.y, origin found in ecs/compnoents/C_Collidable)
+// ID 5 is the collidable component (widht, height, offset.x, offset.y, origin found in ecs/components/C_Collidable)
 Component 5 20.0 20.0 0.0 0.0 2
 
 // ID 6 is the sound emitter component (sound name found in res/sounds, frame start, frame end)

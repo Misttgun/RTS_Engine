@@ -1,7 +1,7 @@
 SIZE 32 32
 SHEET Summer.tilesheet
 |ENTITY|Name|x|y|elevation|
-ENTITY Player 715 360 1
+ENTITY Peon 715 360 1
 |TILE|ID|x|y|layer|solid|
 TILE 19 0 0 0 0
 TILE 27 1 0 0 0
