@@ -14,7 +14,7 @@ namespace ragnarok
     {
         if(GetState() != GUIElementState::Clicked)
         {
-            return;
+			return;
         }
 
         if(t_char == 8)

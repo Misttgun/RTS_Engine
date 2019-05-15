@@ -1,0 +1,2 @@
+Interface SelectionSprite SelectionSprite.style 0 0 Immovable NoTitle "Selection"
+Element Sprite Selection 0 0 Selection.style Content Selection

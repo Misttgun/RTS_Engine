@@ -1,0 +1,2 @@
+Interface RessourceMenu RessourceMenu.style 0 0 Immovable NoTitle "Ressource Menu"
+Element Label RessourceBar 0 0 RessourceMenuBar.style Content "Gold : 0\nPopulation : 1/10"

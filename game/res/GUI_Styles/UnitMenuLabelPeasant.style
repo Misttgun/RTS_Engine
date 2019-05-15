@@ -1,0 +1,19 @@
+State Neutral
+Size 110 50
+BgColor 170 115 40 255
+TextColor 255 255 255 255
+TextSize 15
+Font Main
+TextPadding 55 15
+Glyph IconPeasant
+GlyphPadding 0 6
+/State
+
+State Hover
+BgColor 0 255 0 255
+/State
+
+State Clicked
+BgColor 0 0 255 255
+GlyphPadding 5 6
+/State

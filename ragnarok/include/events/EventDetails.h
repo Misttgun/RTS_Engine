@@ -7,7 +7,7 @@
 
 namespace ragnarok
 {
-    /* Represent all the information available as the events are bieng processed*/
+    /* Represent all the information available as the events are being processed*/
     struct EventDetails
     {
         EventDetails(std::string t_bindName) 

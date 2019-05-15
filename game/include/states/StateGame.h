@@ -19,6 +19,8 @@ public:
 
 	void MainMenu(ragnarok::EventDetails* t_details);
 	void PlayerMove(ragnarok::EventDetails* t_details);
+	void UnitSpawn(ragnarok::EventDetails* t_details);
+	void UpdateRessources();
 
 private:
 	void UpdateCamera();

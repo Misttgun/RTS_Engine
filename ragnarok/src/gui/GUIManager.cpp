@@ -893,7 +893,7 @@ namespace ragnarok
                     keystream >> TemporaryStyle.m_textSize;
                 }
                 else if(type == "TextOriginCenter")
-                {
+				{
                     TemporaryStyle.m_textCenterOrigin = true;
                 }
                 else if(type == "StretchToFit")

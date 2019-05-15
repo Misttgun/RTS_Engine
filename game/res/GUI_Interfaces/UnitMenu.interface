@@ -1,0 +1,4 @@
+Interface UnitMenu UnitMenu.style 0 0 Immovable NoTitle "Unit Menu"
+Element Label UnitPeasant 0 0 UnitMenuLabelPeasant.style Content "Peasant"
+Element Label UnitSoldier 110 0 UnitMenuLabelSoldier.style Content "Soldier"
+Element Label UnitArcher 220 0 UnitMenuLabelArcher.style Content "Archer"
