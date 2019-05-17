@@ -234,19 +234,19 @@ namespace ragnarok
                 return true;
             }
 
-            int entityId = m_entityManager->AddEntity(name);
+            const int entityId = m_entityManager->AddEntity(name);
 
             if (entityId < 0)
             {
                 return true;
             }
 
-            if (name == "Player" || name == "Peon")
+            if (name == "Player")
             {
                 m_playerId = entityId;
             }
 
-            auto position = m_entityManager->GetComponent<C_Position>(entityId, Component::Position);
+            const auto position = m_entityManager->GetComponent<C_Position>(entityId, Component::Position);
             if (position)
             {
                 t_stream >> *position;

@@ -3,6 +3,8 @@ DEFAULT_FRICTION 1.0 1.0
 SHEET Sheet1.tilesheet
 |ENTITY|Name|x|y|elevation|
 ENTITY Player 715 360 1
+ENTITY Peon 315 260 1
+ENTITY Peon 515 360 1
 |TILE|ID|x|y|layer|solid|
 TILE 0 0 0 0 0
 TILE 0 0 1 0 0
