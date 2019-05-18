@@ -1,3 +1,5 @@
+#include <ecs/components/C_Attack.h>
+#include <ecs/components/C_SpriteSheet.h>
 #include "states/StateManager.h"
 #include "window/Window.h"
 #include "gui/GUIManager.h"
@@ -15,8 +17,8 @@ StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_state
 {}
 
 StateGame::~StateGame() = default;
-int Gold;			//!\ attention, probablement merdique de faire comme ça !
-int Population;		//!\ attention, probablement merdique de faire comme ça !
+int Gold;			//!\ attention, probablement merdique de faire comme ï¿½a !
+int Population;		//!\ attention, probablement merdique de faire comme ï¿½a !
 sf::RectangleShape rectangle(sf::Vector2f(64.0f, 64.0f));
 
 void StateGame::OnCreate()
@@ -34,7 +36,7 @@ void StateGame::OnCreate()
     ragnarok::EventManager* evMgr = context->m_eventManager;
 
     evMgr->AddCallback("Key_Escape", &StateGame::MainMenu, this);
-    evMgr->AddCallback("Mouse_Right", &StateGame::PlayerMove, this);
+    evMgr->AddCallback("Mouse_Right", &StateGame::Interact, this);
     evMgr->AddCallback("Mouse_Left", &StateGame::UnitSpawn, this);
 
     const sf::Vector2u size = context->m_wind->GetWindowSize();
@@ -77,13 +79,17 @@ void StateGame::Update(const sf::Time& t_time)
     {
         const auto screenPos = context->m_wind->GetRenderWindow()->mapCoordsToPixel(pos->GetPosition());
         auto fpos = static_cast<sf::Vector2f>(screenPos) - sf::Vector2f(16.0f, 16.0f);
-        context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(fpos);	//!\ a changer une fois que la map seras en full visibilité
+        context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(fpos);	//!\ a changer une fois que la map seras en full visibilitï¿½
         rectangle.setPosition(pos->GetPosition());
 
-        if (static_cast<sf::Vector2i>(pos->GetPosition()) != static_cast<sf::Vector2i>(m_destination) && m_destination != sf::Vector2f(-1, -1))
+        const auto spriteSheet = context->m_entityManager->GetComponent<ragnarok::C_SpriteSheet>(m_player, ragnarok::Component::SpriteSheet);
+        if (spriteSheet == nullptr || spriteSheet->GetSpriteSheet()->GetCurrentAnim()->GetName() != "Attack")
         {
-            const auto diff = m_destination - pos->GetPosition();
-            MovementLogic(diff);
+            if (static_cast<sf::Vector2i>(pos->GetPosition()) != static_cast<sf::Vector2i>(m_destination) && m_destination != sf::Vector2f(-1, -1))
+            {
+                const auto diff = m_destination - pos->GetPosition();
+                MovementLogic(diff);
+            }
         }
 
         UpdateRessources();
@@ -191,17 +197,35 @@ void StateGame::Activate()
 void StateGame::Deactivate()
 {}
 
-void StateGame::PlayerMove(ragnarok::EventDetails* t_details)
+void StateGame::Interact(ragnarok::EventDetails *t_details)
 {
-    if (t_details->m_name == "Mouse_Right")
+    if (t_details->m_name != "Mouse_Right")
     {
-        const auto context = m_stateMgr->GetContext();
-        ragnarok::GUIManager* gui = context->m_guiManager;
-        if (!(gui->GetInterface("RessourceMenu")->IsFocused()) && !(gui->GetInterface("UnitMenu")->IsFocused()))
+        return;
+    }
+
+    const auto context = m_stateMgr->GetContext();
+    ragnarok::GUIManager* gui = context->m_guiManager;
+    if (!(gui->GetInterface("RessourceMenu")->IsFocused())
+        && !(gui->GetInterface("UnitMenu")->IsFocused()))
+    {
+        ragnarok::Window* window = context->m_wind;
+        const sf::Vector2i mousePos = context->m_eventManager->GetMousePos(window->GetRenderWindow());
+        const sf::Vector2f clickedPosition = window->GetRenderWindow()->mapPixelToCoords(mousePos);
+        int clickedEntity = context->m_entityManager->FindEntityAtPoint(clickedPosition);
+        if (clickedEntity != -1 && clickedEntity != m_player)
         {
-            ragnarok::Window* window = context->m_wind;
-            const sf::Vector2i mousePos = context->m_eventManager->GetMousePos(window->GetRenderWindow());
-            m_destination = window->GetRenderWindow()->mapPixelToCoords(mousePos);
+            const auto attack = context->m_entityManager->GetComponent<ragnarok::C_Attack>(m_player,
+                                                                                           ragnarok::Component::Attack);
+            if (attack == nullptr)
+            {
+                return;
+            }
+            attack->SetTargetEntity(clickedEntity);
+        }
+        else
+        {
+            m_destination = clickedPosition;
         }
     }
 }

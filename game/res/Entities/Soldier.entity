@@ -1,5 +1,5 @@
 Name Soldier
-Attributes 255
+Attributes 511
 |Component|ID|Individual attributes|
 Component 0 0 0 1
 Component 1 Soldier
@@ -9,3 +9,4 @@ Component 4
 Component 5 40.0 40.0 0.0 0.0 2
 Component 6 footstep:1,4
 Component 7
+Component 8 0 2 60

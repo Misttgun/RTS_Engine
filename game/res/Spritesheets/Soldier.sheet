@@ -7,4 +7,4 @@ Spacing 0.0 0.0
 AnimationType Directional
 Animation Idle 0 0 0 1.0 -1 -1
 Animation Walk 1 4 0 0.2 -1 -1
-Animation Attack 0 3 4 0.2 -1 -1
+Animation Attack 0 3 4 0.2 3 3
