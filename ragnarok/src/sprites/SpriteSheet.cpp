@@ -41,7 +41,7 @@ namespace ragnarok
     void SpriteSheet::SetSpriteSize(const sf::Vector2u& t_size)
     {
         m_spriteSize = t_size;
-        m_sprite.setOrigin(static_cast<float>(m_spriteSize.x) / 2, static_cast<float>(m_spriteSize.y));
+        m_sprite.setOrigin(static_cast<float>(m_spriteSize.x) / 2, static_cast<float>(m_spriteSize.y) / 2);
     }
 
     void SpriteSheet::SetSpritePosition(const sf::Vector2f& t_pos)

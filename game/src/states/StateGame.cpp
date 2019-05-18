@@ -17,6 +17,7 @@ StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_state
 StateGame::~StateGame() = default;
 int Gold;			//!\ attention, probablement merdique de faire comme ça !
 int Population;		//!\ attention, probablement merdique de faire comme ça !
+sf::RectangleShape rectangle(sf::Vector2f(64.0f, 64.0f));
 
 void StateGame::OnCreate()
 {
@@ -48,6 +49,11 @@ void StateGame::OnCreate()
     loading->AddLoader(context->m_gameMap);
     loading->SetManualContinue(true);
     context->m_soundManager->PlayMusic("TownTheme", 50.f, true);
+
+    rectangle.setFillColor(sf::Color::Transparent);
+    rectangle.setOrigin(32.0f, 32.0f);
+    rectangle.setOutlineThickness(1.f);
+    rectangle.setOutlineColor(sf::Color(250, 150, 100));
 }
 
 void StateGame::OnDestroy()
@@ -69,14 +75,16 @@ void StateGame::Update(const sf::Time& t_time)
     const auto pos = m_stateMgr->GetContext()->m_entityManager->GetComponent<ragnarok::C_Position>(m_player, ragnarok::Component::Position);
     if (pos)
     {
+        const auto screenPos = context->m_wind->GetRenderWindow()->mapCoordsToPixel(pos->GetPosition());
+        auto fpos = static_cast<sf::Vector2f>(screenPos) - sf::Vector2f(16.0f, 16.0f);
+        context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(fpos);	//!\ a changer une fois que la map seras en full visibilité
+        rectangle.setPosition(pos->GetPosition());
+
         if (static_cast<sf::Vector2i>(pos->GetPosition()) != static_cast<sf::Vector2i>(m_destination) && m_destination != sf::Vector2f(-1, -1))
         {
             const auto diff = m_destination - pos->GetPosition();
             MovementLogic(diff);
         }
-
-        const auto screenPos = context->m_wind->GetRenderWindow()->mapCoordsToPixel(pos->GetPosition());
-        context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(static_cast<sf::Vector2f>(screenPos));	//!\ a changer une fois que la map seras en full visibilité
 
         UpdateRessources();
         UpdateCamera();
@@ -162,6 +170,8 @@ void StateGame::Draw()
         context->m_gameMap->Draw(i);
         m_stateMgr->GetContext()->m_systemManager->Draw(m_stateMgr->GetContext()->m_wind, i);
     }
+
+    context->m_wind->GetRenderer()->Draw(rectangle);
 }
 
 void StateGame::MainMenu(ragnarok::EventDetails* t_details)

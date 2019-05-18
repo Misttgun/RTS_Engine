@@ -3,11 +3,9 @@
 #include <unordered_map>
 #include <memory>
 #include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
 #include "AnimDirectional.h"
 #include "../resources/TextureManager.h"
 #include "../window/Window.h"
-#include "../utilities/Utilities.h"
 
 namespace ragnarok
 {
