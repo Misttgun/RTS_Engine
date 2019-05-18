@@ -56,8 +56,8 @@ void StateGame::OnDestroy()
     m_stateMgr->GetContext()->m_guiManager->RemoveInterface(ragnarok::StateType::Game, "GameMenu");
     ragnarok::EventManager* evMgr = context->m_eventManager;
     evMgr->RemoveCallback(ragnarok::StateType::Game, "Key_Escape");
-    evMgr->RemoveCallback(ragnarok::StateType::Game, "Key_O");
     evMgr->RemoveCallback(ragnarok::StateType::Game, "Mouse_Left");
+    evMgr->RemoveCallback(ragnarok::StateType::Game, "Mouse_Right");
 
     context->m_gameMap->PurgeMap();
     context->m_gameMap->GetTileSet()->Purge();
@@ -75,7 +75,8 @@ void StateGame::Update(const sf::Time& t_time)
             MovementLogic(diff);
         }
 
-        context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(pos->GetPosition());	//!\ a changer une fois que la map seras en full visibilité
+        const auto screenPos = context->m_wind->GetRenderWindow()->mapCoordsToPixel(pos->GetPosition());
+        context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(static_cast<sf::Vector2f>(screenPos));	//!\ a changer une fois que la map seras en full visibilité
 
         UpdateRessources();
         UpdateCamera();
@@ -207,7 +208,7 @@ void StateGame::UnitSpawn(ragnarok::EventDetails* t_details)
             if (gui->GetInterface("UnitMenu")->GetElement("UnitPeasant")->GetState() == ragnarok::GUIElementState::Clicked)
             {
                 std::cout << "on spawn un peasant" << std::endl;
-                const int entityId = context->m_entityManager->AddEntity("Peon");
+                const int entityId = context->m_entityManager->AddEntity("Peasant");
                 const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
                 const auto rposx = rand(0.0f, 900.0f);
                 const auto rposy = rand(0.0f, 900.0f);
@@ -216,7 +217,7 @@ void StateGame::UnitSpawn(ragnarok::EventDetails* t_details)
             else if (gui->GetInterface("UnitMenu")->GetElement("UnitSoldier")->GetState() == ragnarok::GUIElementState::Clicked)
             {
                 std::cout << "on spawn un soldier" << std::endl;
-                const int entityId = context->m_entityManager->AddEntity("Player");
+                const int entityId = context->m_entityManager->AddEntity("Soldier");
                 const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
                 const auto rposx = rand(0.0f, 900.0f);
                 const auto rposy = rand(0.0f, 900.0f);
@@ -225,6 +226,11 @@ void StateGame::UnitSpawn(ragnarok::EventDetails* t_details)
             else if (gui->GetInterface("UnitMenu")->GetElement("UnitArcher")->GetState() == ragnarok::GUIElementState::Clicked)
             {
                 std::cout << "on spawn un archer" << std::endl;
+                const int entityId = context->m_entityManager->AddEntity("Archer");
+                const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
+                const auto rposx = rand(0.0f, 900.0f);
+                const auto rposy = rand(0.0f, 900.0f);
+                pos->SetPosition(rposx, rposy);
             }
         }
     }

@@ -921,7 +921,8 @@ namespace ragnarok
 
     void GUIInterface::SetContentOffset(const sf::Vector2f& t_offset)
     {
-        m_contentPositionOffset = t_offset; m_content.setPosition(GetPosition() + t_offset);
+        m_contentPositionOffset = t_offset; 
+        m_content.setPosition(GetPosition() + t_offset);
     }
 
     /**
