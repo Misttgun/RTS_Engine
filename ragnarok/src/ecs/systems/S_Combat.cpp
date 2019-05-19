@@ -164,7 +164,7 @@ namespace ragnarok
         Message msg(static_cast<MessageType>(EntityMessage::Attack_Dealt));
         msg.m_sender = t_sender;
         msg.m_receiver = t_attack->GetTargetEntity();
-        msg.m_int = static_cast<int>(0); // TODO Attack type (fire, slash, ...)
+        msg.m_int = static_cast<int>(t_attack->GetAttackType());
         m_systemManager->GetMessageHandler()->Dispatch(msg);
     }
 }

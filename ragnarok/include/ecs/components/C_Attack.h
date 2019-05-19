@@ -22,6 +22,7 @@ namespace ragnarok
             t_stream >> m_damage;
             t_stream >> m_cooldown;
             t_stream >> m_range;
+            t_stream >> m_attackType;
         }
 
         float GetCooldown() const
@@ -68,11 +69,16 @@ namespace ragnarok
             return m_currentCooldown > 0.0F;
         }
 
+        unsigned int GetAttackType() {
+            return m_attackType;
+        }
+
     private:
         bool m_distant;
         unsigned int m_damage;
         float m_cooldown;
         unsigned int m_range;
+        unsigned int m_attackType;
 
         float m_currentCooldown;
         int m_targetEntityID;
