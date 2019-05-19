@@ -58,6 +58,10 @@ namespace ragnarok
             return m_currentCooldown <= 0.0F;
         }
 
+        bool IsUnderCooldown() {
+            return m_currentCooldown > 0.0F;
+        }
+
     private:
         bool m_distant;
         unsigned int m_damage;

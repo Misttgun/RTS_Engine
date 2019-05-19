@@ -86,6 +86,11 @@ namespace ragnarok
 
             const auto attack = eMgr->GetComponent<C_Attack>(t_message.m_sender,
                                                              Component::Attack);
+            if (attack->IsUnderCooldown())
+            {
+                return;
+            }
+
             attack->ResetCooldown();
             if (!attack->IsDistant())
             {
