@@ -3,6 +3,7 @@
 #include "../core/S_Base.h"
 #include "../components/C_Position.h"
 #include "../components/C_Collidable.h"
+#include "../components/C_Attack.h"
 
 namespace ragnarok
 {
@@ -30,5 +31,7 @@ namespace ragnarok
         void KillEntity(int t_entity);
 
         void BeginAttack(const EntityId &t_entity);
+
+        void SendAttackMessage(int t_sender, C_Attack *const t_attack);
     };
 }

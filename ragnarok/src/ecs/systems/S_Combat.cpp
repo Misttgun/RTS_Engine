@@ -23,6 +23,13 @@ namespace ragnarok
         m_systemManager->GetMessageHandler()->Subscribe(EntityMessage::Attack_Action, this);
     }
 
+    /**
+     * Starts attacks for entities having a target in range
+     *
+     * For each entity, manages attack cooldown and if the entity has a target,
+     * begins attacks when in range. Also unsets target when dead.
+     * @param t_dT The delta time since last frame
+     */
     void S_Combat::Update(float t_dT)
     {
         EntityManager* entityMgr = m_systemManager->GetEntityManager();
@@ -73,6 +80,10 @@ namespace ragnarok
         }
     }
 
+    /**
+     * Handles Attack_Action messages in order to execute attacks
+     * @param t_message The message to handle
+     */
     void S_Combat::Notify(const Message& t_message)
     {
         EntityManager* eMgr = m_systemManager->GetEntityManager();
@@ -93,14 +104,8 @@ namespace ragnarok
             }
 
             attack->ResetCooldown();
-            if (!attack->IsDistant())
-            {
-                KillEntity(attack->GetTargetEntity());
-            }
-            else
-            {
-                // TODO Do the distant attack
-            }
+            KillEntity(attack->GetTargetEntity()); // TODO inflict damage
+            SendAttackMessage(t_message.m_sender, attack);
         }
     }
 
@@ -146,6 +151,20 @@ namespace ragnarok
         Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
         msg.m_receiver = t_entity;
         msg.m_int = static_cast<int>(EntityState::Attacking);
+        m_systemManager->GetMessageHandler()->Dispatch(msg);
+    }
+
+    /**
+     * Informs systems that an attack was just dealt
+     * @param t_sender The attacker
+     * @param t_attack The target of the attack
+     */
+    void S_Combat::SendAttackMessage(int t_sender,
+                                     C_Attack *const t_attack) {
+        Message msg(static_cast<MessageType>(EntityMessage::Attack_Dealt));
+        msg.m_sender = t_sender;
+        msg.m_receiver = t_attack->GetTargetEntity();
+        msg.m_int = static_cast<int>(0); // TODO Attack type (fire, slash, ...)
         m_systemManager->GetMessageHandler()->Dispatch(msg);
     }
 }
