@@ -217,7 +217,10 @@ void StateGame::Interact(ragnarok::EventDetails *t_details)
         {
             const auto attack = context->m_entityManager->GetComponent<ragnarok::C_Attack>(m_player,
                                                                                            ragnarok::Component::Attack);
-            if (attack == nullptr)
+            const auto spriteSheet =
+                    context->m_entityManager->GetComponent<ragnarok::C_SpriteSheet>(m_player,
+                                                                                    ragnarok::Component::SpriteSheet);
+            if (attack == nullptr || spriteSheet->GetSpriteSheet()->GetCurrentAnim()->GetName() == "Attack")
             {
                 return;
             }
