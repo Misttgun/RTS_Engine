@@ -19,7 +19,7 @@ StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_state
 StateGame::~StateGame() = default;
 int Gold;			//!\ attention, probablement merdique de faire comme �a !
 int Population;		//!\ attention, probablement merdique de faire comme �a !
-sf::RectangleShape rectangle(sf::Vector2f(64.0f, 64.0f));
+sf::RectangleShape rectangle(sf::Vector2f(40.0f, 40.0f));
 
 void StateGame::OnCreate()
 {
@@ -31,7 +31,7 @@ void StateGame::OnCreate()
     Gold = 0;
     Population = 1;
     gui->LoadInterface("UnitMenu.interface", "UnitMenu");
-    gui->LoadInterface("SelectionSprite.interface", "SelectionSprite");
+    //gui->LoadInterface("SelectionSprite.interface", "SelectionSprite");
 
     ragnarok::EventManager* evMgr = context->m_eventManager;
 
@@ -53,9 +53,9 @@ void StateGame::OnCreate()
     context->m_soundManager->PlayMusic("TownTheme", 50.f, true);
 
     rectangle.setFillColor(sf::Color::Transparent);
-    rectangle.setOrigin(32.0f, 32.0f);
+    rectangle.setOrigin(20.0f, 20.0f);
     rectangle.setOutlineThickness(1.f);
-    rectangle.setOutlineColor(sf::Color(250, 150, 100));
+    rectangle.setOutlineColor(sf::Color::Green);
 }
 
 void StateGame::OnDestroy()
@@ -77,9 +77,9 @@ void StateGame::Update(const sf::Time& t_time)
     const auto pos = m_stateMgr->GetContext()->m_entityManager->GetComponent<ragnarok::C_Position>(m_player, ragnarok::Component::Position);
     if (pos)
     {
-        const auto screenPos = context->m_wind->GetRenderWindow()->mapCoordsToPixel(pos->GetPosition());
-        auto fpos = static_cast<sf::Vector2f>(screenPos) - sf::Vector2f(16.0f, 16.0f);
-        context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(fpos);	//!\ a changer une fois que la map seras en full visibilit�
+        //const auto screenPos = context->m_wind->GetRenderWindow()->mapCoordsToPixel(pos->GetPosition());
+        //auto fpos = static_cast<sf::Vector2f>(screenPos) - sf::Vector2f(16.0f, 16.0f);
+        //context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(fpos);	//!\ a changer une fois que la map seras en full visibilit�
         rectangle.setPosition(pos->GetPosition());
 
         const auto spriteSheet = context->m_entityManager->GetComponent<ragnarok::C_SpriteSheet>(m_player, ragnarok::Component::SpriteSheet);

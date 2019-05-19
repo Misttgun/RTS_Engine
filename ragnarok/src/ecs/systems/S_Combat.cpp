@@ -104,7 +104,7 @@ namespace ragnarok
             }
 
             attack->ResetCooldown();
-            KillEntity(attack->GetTargetEntity()); // TODO inflict damage
+            //KillEntity(attack->GetTargetEntity()); // TODO inflict damage
             SendAttackMessage(t_message.m_sender, attack);
         }
     }
