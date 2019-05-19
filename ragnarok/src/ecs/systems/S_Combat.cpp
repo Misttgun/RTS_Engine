@@ -53,10 +53,7 @@ namespace ragnarok
                 else if (EntityInAttackRange(position, targetPosition,
                                              attack->IsDistant()))
                 {
-                    Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
-                    msg.m_receiver = entity;
-                    msg.m_int = static_cast<int>(EntityState::Attacking);
-                    m_systemManager->GetMessageHandler()->Dispatch(msg);
+                    StartAttacking(entity);
                 }
             }
         }
@@ -87,14 +84,7 @@ namespace ragnarok
             attack->ResetCooldown();
             if (!attack->IsDistant())
             {
-                //Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
-                //msg.m_receiver = attack->GetTargetEntity();
-                //msg.m_int = static_cast<int>(EntityState::Dying);
-                //m_systemManager->GetMessageHandler()->Dispatch(msg);
-
-                Message msg(static_cast<MessageType>(EntityMessage::Dead));
-                msg.m_receiver = attack->GetTargetEntity();
-                m_systemManager->GetMessageHandler()->Dispatch(msg);
+                KillEntity(attack->GetTargetEntity());
             }
             else
             {
@@ -103,16 +93,49 @@ namespace ragnarok
         }
     }
 
-    bool S_Combat::EntityInAttackRange(C_Position *const attackerPosition,
-                                       const C_Position *targetPosition,
-                                       bool distant) {
+    /**
+     * Determines whether a target is in an attacker's attack range
+     * @param t_attackerPosition The attacker's position component
+     * @param t_targetPosition The target's position component
+     * @param t_distant Whether the attack is distant
+     * @return True if the target is in the attacker's attack range, else false
+     */
+    bool S_Combat::EntityInAttackRange(C_Position *const t_attackerPosition,
+                                       const C_Position *t_targetPosition,
+                                       bool t_distant) {
         const unsigned int AABBWidth = 40; // TODO Temporary, for testing
-        unsigned int range = (distant ? 30 : 5); // TODO Temporary, for testing
+        unsigned int range = (t_distant ? 30 : 5); // TODO Temporary, for testing
 
-        float xDist = attackerPosition->GetPosition().x - targetPosition->GetPosition().x;
-        float yDist = attackerPosition->GetPosition().y - targetPosition->GetPosition().y;
+        float xDist = t_attackerPosition->GetPosition().x - t_targetPosition->GetPosition().x;
+        float yDist = t_attackerPosition->GetPosition().y - t_targetPosition->GetPosition().y;
         float distance = std::sqrt(xDist*xDist + yDist*yDist);
 
         return distance <= range + 2 * AABBWidth;
+    }
+
+    /**
+     * Informs the systems of the death of passed entity
+     * @param t_entity The ID of the dying entity
+     */
+    void S_Combat::KillEntity(int t_entity) {
+        //Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
+        //msg.m_receiver = t_entity;
+        //msg.m_int = static_cast<int>(EntityState::Dying);
+        //m_systemManager->GetMessageHandler()->Dispatch(msg);
+
+        Message msg(static_cast<MessageType>(EntityMessage::Dead));
+        msg.m_receiver = t_entity;
+        m_systemManager->GetMessageHandler()->Dispatch(msg);
+    }
+
+    /**
+     * Makes passed entity start attacking once
+     * @param t_entity The entity that will start attacking
+     */
+    void S_Combat::StartAttacking(const EntityId &t_entity) {
+        Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
+        msg.m_receiver = t_entity;
+        msg.m_int = static_cast<int>(EntityState::Attacking);
+        m_systemManager->GetMessageHandler()->Dispatch(msg);
     }
 }

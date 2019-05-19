@@ -23,16 +23,12 @@ namespace ragnarok
         void Notify(const Message& t_message) override;
 
         private:
-        /**
-         * \brief Determines whether target is in attack range
-         * \param t_entity the entity
-         * \param t_attackerPosition the attacker entity's position component
-         * \param t_targetPosition the target entity's position component
-         * \param t_distant whether the attack is distant
-         */
         bool EntityInAttackRange(C_Position *t_attackerPosition,
                                  const C_Position *t_targetPosition,
                                  bool t_distant);
 
+        void KillEntity(int t_entity);
+
+        void StartAttacking(const EntityId &t_entity);
     };
 }
