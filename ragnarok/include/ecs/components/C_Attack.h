@@ -55,8 +55,6 @@ namespace ragnarok
                 m_currentCooldown -= t_deltaTime;
             }
 
-            std::cerr << "m_currentCooldown: " << m_currentCooldown << std::endl;
-
             return m_currentCooldown <= 0.0F;
         }
 
