@@ -29,6 +29,6 @@ namespace ragnarok
 
         void KillEntity(int t_entity);
 
-        void StartAttacking(const EntityId &t_entity);
+        void BeginAttack(const EntityId &t_entity);
     };
 }

@@ -59,7 +59,7 @@ namespace ragnarok
                                              attack->IsDistant(),
                                              attack->GetRange()))
                 {
-                    StartAttacking(entity);
+                    BeginAttack(entity);
                 }
             }
         }
@@ -142,7 +142,7 @@ namespace ragnarok
      * Makes passed entity start attacking once
      * @param t_entity The entity that will start attacking
      */
-    void S_Combat::StartAttacking(const EntityId &t_entity) {
+    void S_Combat::BeginAttack(const EntityId &t_entity) {
         Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
         msg.m_receiver = t_entity;
         msg.m_int = static_cast<int>(EntityState::Attacking);
