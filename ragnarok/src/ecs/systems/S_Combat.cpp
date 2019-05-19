@@ -42,6 +42,11 @@ namespace ragnarok
             AnimBase *currentAnim = spriteSheet->GetSpriteSheet()->GetCurrentAnim();
             int targetEntity = attack->GetTargetEntity();
 
+            if (!attack->UpdateCooldown(t_dT))
+            {
+                continue;
+            }
+
             if (targetEntity == -1)
             {
                 continue;
@@ -49,11 +54,6 @@ namespace ragnarok
 
             if (currentAnim->GetName() != "Attack")
             {
-                if (!attack->UpdateCooldown(t_dT))
-                {
-                    continue;
-                }
-
                 const C_Position *targetPosition =
                         entityMgr->GetComponent<C_Position>(targetEntity,
                                                             Component::Position);
