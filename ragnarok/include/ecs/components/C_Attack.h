@@ -23,12 +23,12 @@ namespace ragnarok
             t_stream >> m_cooldown;
         }
 
-        unsigned int GetCooldown() const
+        float GetCooldown() const
         {
             return m_cooldown;
         }
 
-        void SetCooldown(unsigned int t_cooldown)
+        void SetCooldown(float t_cooldown)
         {
             m_cooldown = t_cooldown;
         }
@@ -49,11 +49,22 @@ namespace ragnarok
             m_targetEntityID = t_entity;
         }
 
+        bool UpdateCooldown(float t_deltaTime) {
+            if (m_currentCooldown > 0.0F)
+            {
+                m_currentCooldown -= t_deltaTime;
+            }
+
+            std::cerr << "m_currentCooldown: " << m_currentCooldown << std::endl;
+
+            return m_currentCooldown <= 0.0F;
+        }
+
     private:
         bool m_distant;
         unsigned int m_damage;
-        unsigned int m_cooldown;
-        unsigned int m_currentCooldown;
+        float m_cooldown;
+        float m_currentCooldown;
         int m_targetEntityID;
     };
 }

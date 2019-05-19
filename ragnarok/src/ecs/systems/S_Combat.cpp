@@ -42,6 +42,11 @@ namespace ragnarok
 
             if (currentAnim->GetName() != "Attack")
             {
+                if (!attack->UpdateCooldown(t_dT))
+                {
+                    continue;
+                }
+
                 const C_Position *targetPosition =
                         entityMgr->GetComponent<C_Position>(targetEntity,
                                                             Component::Position);
@@ -63,7 +68,7 @@ namespace ragnarok
                                const EntityEvent& t_event)
     {
         if (t_event == EntityEvent::Targeted_Entity) {
-            // TODO Start chasing the target
+            // TODO Start chasing the target, but in a different system, not here
         }
     }
 
