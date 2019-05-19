@@ -25,7 +25,7 @@ namespace ragnarok
         private:
         bool EntityInAttackRange(C_Position *t_attackerPosition,
                                  const C_Position *t_targetPosition,
-                                 bool t_distant);
+                                 bool t_distant, unsigned int t_range);
 
         void KillEntity(int t_entity);
 

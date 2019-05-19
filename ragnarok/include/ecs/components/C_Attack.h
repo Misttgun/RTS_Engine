@@ -21,6 +21,7 @@ namespace ragnarok
             m_distant = distant;
             t_stream >> m_damage;
             t_stream >> m_cooldown;
+            t_stream >> m_range;
         }
 
         float GetCooldown() const
@@ -31,6 +32,11 @@ namespace ragnarok
         void SetCooldown(float t_cooldown)
         {
             m_cooldown = t_cooldown;
+        }
+
+        unsigned int GetRange() const
+        {
+            return m_range;
         }
 
         int GetTargetEntity() {
@@ -66,6 +72,8 @@ namespace ragnarok
         bool m_distant;
         unsigned int m_damage;
         float m_cooldown;
+        unsigned int m_range;
+
         float m_currentCooldown;
         int m_targetEntityID;
     };

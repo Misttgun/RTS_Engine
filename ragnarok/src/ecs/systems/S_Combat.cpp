@@ -56,7 +56,8 @@ namespace ragnarok
                     attack->SetTargetEntity(-1);
                 }
                 else if (EntityInAttackRange(position, targetPosition,
-                                             attack->IsDistant()))
+                                             attack->IsDistant(),
+                                             attack->GetRange()))
                 {
                     StartAttacking(entity);
                 }
@@ -112,15 +113,14 @@ namespace ragnarok
      */
     bool S_Combat::EntityInAttackRange(C_Position *const t_attackerPosition,
                                        const C_Position *t_targetPosition,
-                                       bool t_distant) {
+                                       bool t_distant, unsigned int t_range) {
         const unsigned int AABBWidth = 40; // TODO Temporary, for testing
-        unsigned int range = (t_distant ? 30 : 5); // TODO Temporary, for testing
 
         float xDist = t_attackerPosition->GetPosition().x - t_targetPosition->GetPosition().x;
         float yDist = t_attackerPosition->GetPosition().y - t_targetPosition->GetPosition().y;
         float distance = std::sqrt(xDist*xDist + yDist*yDist);
 
-        return distance <= range + 2 * AABBWidth;
+        return distance <= t_range + 2 * AABBWidth;
     }
 
     /**
