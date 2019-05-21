@@ -30,7 +30,8 @@ namespace ragnarok
 
         void KillEntity(int t_entity);
 
-        void BeginAttack(const EntityId &t_entity);
+        void BeginAttack(const EntityId &t_entity, const C_Position *t_attackerPosition,
+                         const C_Position *t_targetPosition);
 
         void SendAttackMessage(int t_sender, C_Attack *const t_attack);
     };

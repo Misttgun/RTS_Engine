@@ -66,7 +66,7 @@ namespace ragnarok
                                              attack->IsDistant(),
                                              attack->GetRange()))
                 {
-                    BeginAttack(entity);
+                    BeginAttack(entity, position, targetPosition);
                 }
             }
         }
@@ -147,11 +147,35 @@ namespace ragnarok
      * Makes passed entity start attacking once
      * @param t_entity The entity that will start attacking
      */
-    void S_Combat::BeginAttack(const EntityId &t_entity) {
-        Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
-        msg.m_receiver = t_entity;
-        msg.m_int = static_cast<int>(EntityState::Attacking);
-        m_systemManager->GetMessageHandler()->Dispatch(msg);
+    void S_Combat::BeginAttack(const EntityId &t_entity,
+                               const C_Position *t_attackerPosition,
+                               const C_Position *t_targetPosition) {
+        sf::Vector2f delta = t_targetPosition->GetPosition() - t_attackerPosition->GetPosition();
+
+        Message directionMessage(static_cast<MessageType>(EntityMessage::Direction_Changed));
+        directionMessage.m_receiver = t_entity;
+        if (static_cast<int>(delta.x) > 0)
+        {
+            directionMessage.m_int = static_cast<int>(ragnarok::Direction::Right);
+        }
+        else if (static_cast<int>(delta.x) < 0)
+        {
+            directionMessage.m_int = static_cast<int>(ragnarok::Direction::Left);
+        }
+        else if (static_cast<int>(delta.y) > 0)
+        {
+            directionMessage.m_int = static_cast<int>(ragnarok::Direction::Down);
+        }
+        else if (static_cast<int>(delta.y) < 0)
+        {
+            directionMessage.m_int = static_cast<int>(ragnarok::Direction::Up);
+        }
+        m_systemManager->GetMessageHandler()->Dispatch(directionMessage);
+
+        Message stateMessage(static_cast<MessageType>(EntityMessage::Switch_State));
+        stateMessage.m_receiver = t_entity;
+        stateMessage.m_int = static_cast<int>(EntityState::Attacking);
+        m_systemManager->GetMessageHandler()->Dispatch(stateMessage);
     }
 
     /**
