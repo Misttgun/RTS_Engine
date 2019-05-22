@@ -9,7 +9,7 @@
 StateIntro::StateIntro(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager)
 {}
 
-StateIntro::~StateIntro()= default;
+StateIntro::~StateIntro() = default;
 
 void StateIntro::OnCreate()
 {
@@ -22,16 +22,16 @@ void StateIntro::OnCreate()
     textureMgr->RequireResource("Intro");
     m_introSprite.setTexture(*textureMgr->GetResource("Intro"));
     m_introSprite.setOrigin(textureMgr->GetResource("Intro")->getSize().x / 2.0f, textureMgr->GetResource("Intro")->getSize().y / 2.0f);
-    m_introSprite.setPosition(windowSize.x / 2.0f, 0);
+    m_introSprite.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f - 75.f);
 
     ragnarok::FontManager* fontMgr = context->m_fontManager;
-    fontMgr->RequireResource("Main");
     m_text.setFont(*fontMgr->GetResource("Main"));
     m_text.setString(sf::String("Press SPACE to continue"));
-    m_text.setCharacterSize(15);
+    m_text.setCharacterSize(20);
     const sf::FloatRect textRect = m_text.getLocalBounds();
     m_text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-    m_text.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
+    m_text.setPosition(m_introSprite.getPosition().x,
+                       m_introSprite.getPosition().y + textureMgr->GetResource("Intro")->getSize().y / 1.75f);
 
     ragnarok::EventManager* evMgr = context->m_eventManager;
     evMgr->AddCallback("Intro_Continue", &StateIntro::Continue, this);
@@ -70,30 +70,17 @@ void StateIntro::Draw()
     sf::RenderWindow* window = m_stateMgr->GetContext()->m_wind->GetRenderWindow();
 
     window->draw(m_introSprite);
-
-    if(m_timePassed >= 2.0f)
-    {
-        window->draw(m_text);
-    }
+    window->draw(m_text);
 }
 
 void StateIntro::Continue(ragnarok::EventDetails* t_details)
 {
-    if(m_timePassed >= 2.0f)
-    {
-        m_stateMgr->SwitchTo(ragnarok::StateType::MainMenu);
-        m_stateMgr->Remove(ragnarok::StateType::Intro);
-    }
+    m_stateMgr->SwitchTo(ragnarok::StateType::MainMenu);
+    m_stateMgr->Remove(ragnarok::StateType::Intro);
 }
 
 void StateIntro::Update(const sf::Time& t_time)
-{
-    if(m_timePassed < 2.0f)
-    { // Less than two seconds.
-        m_timePassed += t_time.asSeconds();
-        m_introSprite.setPosition(m_introSprite.getPosition().x, m_introSprite.getPosition().y + (120 * t_time.asSeconds()));
-    }
-}
+{}
 
 void StateIntro::Activate()
 {}

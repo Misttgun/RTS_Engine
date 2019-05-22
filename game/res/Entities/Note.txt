@@ -1,8 +1,8 @@
 // First you put the name of the entity
 Name Player
 
-// Second you calculate the bitmask depending on the number of component (2^8) - 1 = 255 whish is the max 
-Attributes 255
+// Second you calculate the bitmask depending on the number of component (2^11) - 1 = 2047 whish is the max 
+Attributes 2047
 
 // You then populate the components
 // All the IDs and meaning are found in ecs/ECSTypes.h
@@ -29,5 +29,14 @@ Component 5 20.0 20.0 0.0 0.0 2
 // ID 6 is the sound emitter component (sound name found in res/sounds, frame start, frame end)
 Component 6 footstep:1,4
 
-// ID 0 is the sound listener component
+// ID 7 is the sound listener component
 Component 7
+
+// ID 8 is the attack component (islongrange, damage, cooldown between attacks, range, attack type)
+Component 8 0 2 0 1 0
+
+// ID 9 is the health component (max health, offsetx, offsety)
+Component 9 200 0 40
+
+// ID 10 is the selection component (size of rectangle)
+Component 10 32

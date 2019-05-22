@@ -19,7 +19,7 @@ StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_state
 StateGame::~StateGame() = default;
 int Gold;			//!\ attention, probablement merdique de faire comme �a !
 int Population;		//!\ attention, probablement merdique de faire comme �a !
-sf::RectangleShape rectangle(sf::Vector2f(40.0f, 40.0f));
+sf::RectangleShape rectangle(sf::Vector2f(32.0f, 32.0f));
 
 void StateGame::OnCreate()
 {
@@ -50,10 +50,10 @@ void StateGame::OnCreate()
     context->m_gameMap->AddFile(ragnarok::Utils::GetWorkingDirectory() + "res/Maps/forest.map");
     loading->AddLoader(context->m_gameMap);
     loading->SetManualContinue(true);
-    context->m_soundManager->PlayMusic("TownTheme", 50.f, true);
+    context->m_soundManager->PlayMusic("TownTheme", 0.5f, true);
 
     rectangle.setFillColor(sf::Color::Transparent);
-    rectangle.setOrigin(20.0f, 20.0f);
+    rectangle.setOrigin(16.0f, 16.0f);
     rectangle.setOutlineThickness(1.f);
     rectangle.setOutlineColor(sf::Color::Green);
 }

@@ -5,8 +5,8 @@
 #include "../../../include/ecs/core/SystemManager.h"
 #include "../../../include/map/Map.h"
 #include "../../../include/ecs/components/C_SpriteSheet.h"
-#include "../../../include/ecs/components/C_Attack.h"
 #include "../../../include/ecs/components/C_State.h"
+#include "../../../include/ecs/components/C_Health.h"
 
 namespace ragnarok
 {
@@ -17,6 +17,7 @@ namespace ragnarok
         req.TurnOnBit(static_cast<unsigned int>(Component::Position));
         req.TurnOnBit(static_cast<unsigned int>(Component::SpriteSheet));
         req.TurnOnBit(static_cast<unsigned int>(Component::Attack));
+        req.TurnOnBit(static_cast<unsigned int>(Component::Health));
         m_requiredComponents.push_back(req);
         req.Clear();
 
@@ -34,13 +35,13 @@ namespace ragnarok
     {
         EntityManager* entityMgr = m_systemManager->GetEntityManager();
 
-        for(auto &entity : m_entities)
+        for (auto &entity : m_entities)
         {
             const auto position = entityMgr->GetComponent<C_Position>(entity, Component::Position);
             const auto attack = entityMgr->GetComponent<C_Attack>(entity, Component::Attack);
             const auto spriteSheet = entityMgr->GetComponent<C_SpriteSheet>(entity, Component::SpriteSheet);
             AnimBase *currentAnim = spriteSheet->GetSpriteSheet()->GetCurrentAnim();
-            int targetEntity = attack->GetTargetEntity();
+            const int targetEntity = attack->GetTargetEntity();
 
             if (!attack->UpdateCooldown(t_dT))
             {
@@ -55,27 +56,25 @@ namespace ragnarok
             if (currentAnim->GetName() != "Attack")
             {
                 const C_Position *targetPosition =
-                        entityMgr->GetComponent<C_Position>(targetEntity,
-                                                            Component::Position);
+                    entityMgr->GetComponent<C_Position>(targetEntity,
+                                                        Component::Position);
 
                 if (targetPosition == nullptr)
                 {
                     attack->SetTargetEntity(-1);
                 }
-                else if (EntityInAttackRange(position, targetPosition,
-                                             attack->IsDistant(),
-                                             attack->GetRange()))
+                else if (EntityInAttackRange(position, targetPosition, attack->IsDistant(), attack->GetRange()))
                 {
-                    BeginAttack(entity);
+                    BeginAttack(entity, position, targetPosition);
                 }
             }
         }
     }
 
-    void S_Combat::HandleEvent(const EntityId& t_entity,
-                               const EntityEvent& t_event)
+    void S_Combat::HandleEvent(const EntityId& t_entity, const EntityEvent& t_event)
     {
-        if (t_event == EntityEvent::Targeted_Entity) {
+        if (t_event == EntityEvent::Targeted_Entity)
+        {
             // TODO Start chasing the target, but in a different system, not here
         }
     }
@@ -96,15 +95,14 @@ namespace ragnarok
                 return;
             }
 
-            const auto attack = eMgr->GetComponent<C_Attack>(t_message.m_sender,
-                                                             Component::Attack);
+            const auto attack = eMgr->GetComponent<C_Attack>(t_message.m_sender,Component::Attack);
             if (attack->IsUnderCooldown())
             {
                 return;
             }
 
             attack->ResetCooldown();
-            //KillEntity(attack->GetTargetEntity()); // TODO inflict damage
+            AttackEntity(attack->GetDamage(), attack->GetTargetEntity()); // TODO inflict damage
             SendAttackMessage(t_message.m_sender, attack);
         }
     }
@@ -118,40 +116,77 @@ namespace ragnarok
      */
     bool S_Combat::EntityInAttackRange(C_Position *const t_attackerPosition,
                                        const C_Position *t_targetPosition,
-                                       bool t_distant, unsigned int t_range) {
+                                       bool t_distant, unsigned int t_range) const
+    {
         const unsigned int AABBWidth = 40; // TODO Temporary, for testing
 
         float xDist = t_attackerPosition->GetPosition().x - t_targetPosition->GetPosition().x;
         float yDist = t_attackerPosition->GetPosition().y - t_targetPosition->GetPosition().y;
-        float distance = std::sqrt(xDist*xDist + yDist*yDist);
+        float distance = std::sqrt(xDist*xDist + yDist * yDist);
 
         return distance <= t_range + 2 * AABBWidth;
     }
 
     /**
      * Informs the systems of the death of passed entity
+     * @param t_damage The damage dealt by the attacker
      * @param t_entity The ID of the dying entity
      */
-    void S_Combat::KillEntity(int t_entity) {
-        //Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
-        //msg.m_receiver = t_entity;
-        //msg.m_int = static_cast<int>(EntityState::Dying);
-        //m_systemManager->GetMessageHandler()->Dispatch(msg);
+    void S_Combat::AttackEntity(unsigned int t_damage, EntityId t_entity) const
+    {
+        EntityManager* eMgr = m_systemManager->GetEntityManager();
+        auto hcomp = eMgr->GetComponent<C_Health>(t_entity, Component::Health);
+        if(!hcomp)
+            return;
 
-        Message msg(static_cast<MessageType>(EntityMessage::Dead));
-        msg.m_receiver = t_entity;
-        m_systemManager->GetMessageHandler()->Dispatch(msg);
+        int newHealth = hcomp->GetHealth() - t_damage;
+        if(newHealth < 0)
+            newHealth = 0;
+        hcomp->SetHealth(newHealth);
+        
+        if(newHealth == 0)
+        {
+            Message msg(static_cast<MessageType>(EntityMessage::Dead));
+            msg.m_receiver = t_entity;
+            m_systemManager->GetMessageHandler()->Dispatch(msg);
+        }
     }
 
     /**
      * Makes passed entity start attacking once
      * @param t_entity The entity that will start attacking
      */
-    void S_Combat::BeginAttack(const EntityId &t_entity) {
-        Message msg(static_cast<MessageType>(EntityMessage::Switch_State));
-        msg.m_receiver = t_entity;
-        msg.m_int = static_cast<int>(EntityState::Attacking);
-        m_systemManager->GetMessageHandler()->Dispatch(msg);
+    void S_Combat::BeginAttack(const EntityId &t_entity, const C_Position *t_attackerPosition, const C_Position *t_targetPosition) const
+    {
+        const sf::Vector2f delta = t_targetPosition->GetPosition() - t_attackerPosition->GetPosition();
+
+        if(static_cast<int>(delta.x) != 0)
+        {
+            Message directionMessage(static_cast<MessageType>(EntityMessage::Direction_Changed));
+            directionMessage.m_receiver = t_entity;
+            if (static_cast<int>(delta.x) > 0)
+            {
+                directionMessage.m_int = static_cast<int>(ragnarok::Direction::Right);
+            }
+            else if (static_cast<int>(delta.x) < 0)
+            {
+                directionMessage.m_int = static_cast<int>(ragnarok::Direction::Left);
+            }
+            else if (static_cast<int>(delta.y) > 0)
+            {
+                directionMessage.m_int = static_cast<int>(ragnarok::Direction::Down);
+            }
+            else if (static_cast<int>(delta.y) < 0)
+            {
+                directionMessage.m_int = static_cast<int>(ragnarok::Direction::Up);
+            }
+            m_systemManager->GetMessageHandler()->Dispatch(directionMessage);
+        }
+
+        Message stateMessage(static_cast<MessageType>(EntityMessage::Switch_State));
+        stateMessage.m_receiver = t_entity;
+        stateMessage.m_int = static_cast<int>(EntityState::Attacking);
+        m_systemManager->GetMessageHandler()->Dispatch(stateMessage);
     }
 
     /**
@@ -159,8 +194,8 @@ namespace ragnarok
      * @param t_sender The attacker
      * @param t_attack The target of the attack
      */
-    void S_Combat::SendAttackMessage(int t_sender,
-                                     C_Attack *const t_attack) {
+    void S_Combat::SendAttackMessage(int t_sender, C_Attack *const t_attack) const
+    {
         Message msg(static_cast<MessageType>(EntityMessage::Attack_Dealt));
         msg.m_sender = t_sender;
         msg.m_receiver = t_attack->GetTargetEntity();

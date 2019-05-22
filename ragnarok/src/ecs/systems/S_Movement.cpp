@@ -93,7 +93,7 @@ namespace ragnarok
                     return;
                 }
 
-                // If entity is not moving send the event to chande the state to idle
+                // If entity is not moving send the event to change the state to idle
                 m_systemManager->AddEvent(t_message.m_receiver, static_cast<EventID>(EntityEvent::Became_Idle));
             }
             break;

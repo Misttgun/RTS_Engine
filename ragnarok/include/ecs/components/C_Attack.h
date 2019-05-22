@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../core/C_Base.h"
-#include <iostream>
 
 namespace ragnarok
 {
@@ -10,7 +9,7 @@ namespace ragnarok
      */
     class C_Attack : public C_Base
     {
-        public:
+    public:
         C_Attack() : C_Base(Component::Attack), m_currentCooldown(0), m_targetEntityID(-1)
         {}
 
@@ -40,23 +39,28 @@ namespace ragnarok
             return m_range;
         }
 
-        int GetTargetEntity() {
+        unsigned int GetTargetEntity() const
+        {
             return m_targetEntityID;
         }
 
-        bool IsDistant() {
+        bool IsDistant() const
+        {
             return m_distant;
         }
 
-        void ResetCooldown() {
+        void ResetCooldown()
+        {
             m_currentCooldown = m_cooldown;
         }
 
-        void SetTargetEntity(int t_entity) {
+        void SetTargetEntity(unsigned int t_entity)
+        {
             m_targetEntityID = t_entity;
         }
 
-        bool UpdateCooldown(float t_deltaTime) {
+        bool UpdateCooldown(float t_deltaTime)
+        {
             if (m_currentCooldown > 0.0F)
             {
                 m_currentCooldown -= t_deltaTime;
@@ -65,12 +69,19 @@ namespace ragnarok
             return m_currentCooldown <= 0.0F;
         }
 
-        bool IsUnderCooldown() {
+        bool IsUnderCooldown() const
+        {
             return m_currentCooldown > 0.0F;
         }
 
-        unsigned int GetAttackType() {
+        unsigned int GetAttackType() const
+        {
             return m_attackType;
+        }
+
+        unsigned int GetDamage() const
+        {
+            return m_damage;
         }
 
     private:
@@ -81,6 +92,6 @@ namespace ragnarok
         unsigned int m_attackType;
 
         float m_currentCooldown;
-        int m_targetEntityID;
+        unsigned int m_targetEntityID;
     };
 }

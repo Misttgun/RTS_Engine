@@ -1,6 +1,7 @@
 #include "../../../include/ecs/core/SystemManager.h"
 #include "../../../include/ecs/core/EntityManager.h"
 #include "../../../include/ecs/systems/S_Renderer.h"
+#include "../../../include/ecs/systems/S_EntityUI.h"
 
 namespace ragnarok
 {
@@ -65,14 +66,19 @@ namespace ragnarok
 
     void SystemManager::Draw(Window* t_wind, unsigned int t_elevation)
     {
-        const auto itr = m_systems.find(System::Renderer);
-        if(itr == m_systems.end())
+        auto itr = m_systems.find(System::Renderer);
+        if(itr != m_systems.end())
         {
-            return;
+            auto system = dynamic_cast<S_Renderer*>(itr->second.get());
+            system->Render(t_wind, t_elevation);
         }
 
-        auto system = dynamic_cast<S_Renderer*>(itr->second.get());
-        system->Render(t_wind, t_elevation);
+        itr = m_systems.find(System::EntityUI);
+        if (itr != m_systems.end())
+        {
+            auto ui = dynamic_cast<S_EntityUI*>(itr->second.get());
+            ui->Render(t_wind);
+        }
     }
 
     void SystemManager::EntityModified(const EntityId& t_entity, const Bitmask& t_bits)

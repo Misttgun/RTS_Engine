@@ -1,6 +1,3 @@
-#include <ecs/components/C_Attack.h>
-#include <ecs/systems/S_Combat.h>
-#include <ecs/systems/S_DeadRemover.h>
 #include "../include/Game.h"
 #include "states/StateTypes.h"
 #include "gui/GUIEvent.h"
@@ -14,6 +11,11 @@
 #include "ecs/components/C_Collidable.h"
 #include "ecs/components/C_SoundEmitter.h"
 #include "ecs/components/C_SoundListener.h"
+#include <ecs/components/C_Attack.h>
+#include <ecs/components/C_Health.h>
+#include <ecs/components/C_Selection.h>
+#include <ecs/systems/S_Combat.h>
+#include <ecs/systems/S_DeadRemover.h>
 #include "ecs/systems/S_State.h"
 #include "ecs/systems/S_Control.h"
 #include "ecs/systems/S_Movement.h"
@@ -21,11 +23,12 @@
 #include "ecs/systems/S_SheetAnimation.h"
 #include "ecs/systems/S_Sound.h"
 #include "ecs/systems/S_Renderer.h"
+#include "ecs/systems/S_EntityUI.h"
 #include "../include/states/StateIntro.h"
 #include "../include/states/StateMainMenu.h"
 #include "../include/states/StateGame.h"
 
-Game::Game() : m_window("Chapter 2", sf::Vector2u(800, 600), false), m_soundManager(&m_audioManager), m_guiManager(m_window.GetEventManager(), &m_context),
+Game::Game() : m_window("Ragnarok Demo", sf::Vector2u(800, 600), false), m_soundManager(&m_audioManager), m_guiManager(m_window.GetEventManager(), &m_context),
 m_entityManager(&m_systemManager, &m_textureManager), m_gameMap(&m_window, &m_entityManager, &m_textureManager)
 {
     SetUpClasses();
@@ -121,6 +124,8 @@ void Game::SetUpECS()
     m_entityManager.AddComponentType<ragnarok::C_SoundEmitter>(ragnarok::Component::SoundEmitter);
     m_entityManager.AddComponentType<ragnarok::C_SoundListener>(ragnarok::Component::SoundListener);
     m_entityManager.AddComponentType<ragnarok::C_Attack>(ragnarok::Component::Attack);
+    m_entityManager.AddComponentType<ragnarok::C_Health>(ragnarok::Component::Health);
+    m_entityManager.AddComponentType<ragnarok::C_Selection>(ragnarok::Component::Selection);
 
     m_systemManager.AddSystem<ragnarok::S_State>(ragnarok::System::State);
     m_systemManager.AddSystem<ragnarok::S_Control>(ragnarok::System::Control);
@@ -131,6 +136,7 @@ void Game::SetUpECS()
     m_systemManager.AddSystem<ragnarok::S_Renderer>(ragnarok::System::Renderer);
     m_systemManager.AddSystem<ragnarok::S_Combat>(ragnarok::System::Combat);
     m_systemManager.AddSystem<ragnarok::S_DeadRemover>(ragnarok::System::DeadRemover);
+    m_systemManager.AddSystem<ragnarok::S_EntityUI>(ragnarok::System::EntityUI);
 
     m_systemManager.GetSystem<ragnarok::S_Collision>(ragnarok::System::Collision)->SetMap(&m_gameMap);
     m_systemManager.GetSystem<ragnarok::S_Movement>(ragnarok::System::Movement)->SetMap(&m_gameMap);

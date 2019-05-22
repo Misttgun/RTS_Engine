@@ -1,5 +1,5 @@
 Name AxeThrower
-Attributes 255
+Attributes 2047
 |Component|ID|Individual attributes|
 Component 0 0 0 1
 Component 1 AxeThrower
@@ -9,3 +9,6 @@ Component 4
 Component 5 40.0 40.0 0.0 0.0 2
 Component 6 footstep:1,4
 Component 7
+Component 8 1 18 1 3 0
+Component 9 75 20 30
+Component 10 32
