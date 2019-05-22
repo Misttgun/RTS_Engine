@@ -23,6 +23,9 @@ namespace ragnarok
             t_stream >> m_cooldown;
             t_stream >> m_range;
             t_stream >> m_attackType;
+			int farm = 0;
+			t_stream >> farm;
+			m_canFarm = farm;
         }
 
         float GetCooldown() const
@@ -47,6 +50,10 @@ namespace ragnarok
         bool IsDistant() {
             return m_distant;
         }
+
+		bool CanFarm() {
+			return m_canFarm;
+		}
 
         void ResetCooldown() {
             m_currentCooldown = m_cooldown;
@@ -79,6 +86,7 @@ namespace ragnarok
         float m_cooldown;
         unsigned int m_range;
         unsigned int m_attackType;
+		bool m_canFarm;
 
         float m_currentCooldown;
         int m_targetEntityID;

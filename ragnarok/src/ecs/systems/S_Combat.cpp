@@ -105,7 +105,8 @@ namespace ragnarok
 
             attack->ResetCooldown();
             //KillEntity(attack->GetTargetEntity()); // TODO inflict damage
-            SendAttackMessage(t_message.m_sender, attack);
+			SendFarmingMessage(t_message.m_sender, attack);
+			SendAttackMessage(t_message.m_sender, attack);
         }
     }
 
@@ -191,4 +192,17 @@ namespace ragnarok
         msg.m_int = static_cast<int>(t_attack->GetAttackType());
         m_systemManager->GetMessageHandler()->Dispatch(msg);
     }
+
+	/**
+	 * Informs systems that a unit is farming
+	 * @param t_sender The attacker
+	 * @param t_attack The target of the attack
+	 */
+	void S_Combat::SendFarmingMessage(int t_sender, C_Attack* const t_attack) {
+		Message msg(static_cast<MessageType>(EntityMessage::Farming));
+		msg.m_sender = t_sender;
+		msg.m_receiver = t_attack->GetTargetEntity();
+		msg.m_int = static_cast<int>(t_attack->GetAttackType());
+		m_systemManager->GetMessageHandler()->Dispatch(msg);
+	}
 }

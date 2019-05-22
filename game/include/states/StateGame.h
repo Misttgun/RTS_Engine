@@ -2,8 +2,9 @@
 
 #include "states/BaseState.h"
 #include "events/EventManager.h"
+#include "../../game/include/states/RessourceHandler.h"
 
-class StateGame : public ragnarok::BaseState{
+class StateGame : public ragnarok::BaseState {
 public:
 	StateGame(ragnarok::StateManager* t_stateManager);
 	~StateGame();
@@ -18,13 +19,16 @@ public:
 	void Draw() override;
 
 	void MainMenu(ragnarok::EventDetails* t_details);
-	void Interact(ragnarok::EventDetails *t_details);
-	void UnitSpawn(ragnarok::EventDetails* t_details);
+	void RightClickAction(ragnarok::EventDetails* t_details);
+	void LeftClickAction(ragnarok::EventDetails* t_details);
 	void UpdateRessources();
 
 private:
 	void UpdateCamera();
-    void MovementLogic(const sf::Vector2f& t_delta) const;
+	void MovementLogic(const sf::Vector2f& t_delta) const;
 	int m_player;
-    sf::Vector2f m_destination;
+	int m_population;
+	int m_max_population;
+	sf::Vector2f m_destination;
+	ragnarok::RessourceHandler m_RessourceHandler;
 };

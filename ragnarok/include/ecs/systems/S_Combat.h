@@ -34,5 +34,6 @@ namespace ragnarok
                          const C_Position *t_targetPosition);
 
         void SendAttackMessage(int t_sender, C_Attack *const t_attack);
+		void SendFarmingMessage(int t_sender, C_Attack* const t_attack);
     };
 }
