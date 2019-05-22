@@ -13,13 +13,12 @@
 #include "map/Map.h"
 #include "../../include/states/StateGame.h"
 
-StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager), m_destination(sf::Vector2f(-1, -1))
-{}
+StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager), m_destination(sf::Vector2f(-1, -1)), m_RessourceHandler(t_stateManager->GetContext()->m_systemManager)
+{
+
+}
 
 StateGame::~StateGame() = default;
-int Gold;			//!\ attention, probablement merdique de faire comme �a !
-int Population;		//!\ attention, probablement merdique de faire comme �a !
-sf::RectangleShape rectangle(sf::Vector2f(32.0f, 32.0f));
 
 void StateGame::OnCreate()
 {
@@ -28,16 +27,16 @@ void StateGame::OnCreate()
     ragnarok::GUIManager* gui = context->m_guiManager;
     gui->LoadInterface("RessourceMenu.interface", "RessourceMenu");
     gui->GetInterface("RessourceMenu")->SetPosition(sf::Vector2f(0.f, 0.f));
-    Gold = 0;
-    Population = 1;
+    m_population = 0;
+    m_max_population = 20;
     gui->LoadInterface("UnitMenu.interface", "UnitMenu");
     //gui->LoadInterface("SelectionSprite.interface", "SelectionSprite");
 
     ragnarok::EventManager* evMgr = context->m_eventManager;
 
     evMgr->AddCallback("Key_Escape", &StateGame::MainMenu, this);
-    evMgr->AddCallback("Mouse_Right", &StateGame::Interact, this);
-    evMgr->AddCallback("Mouse_Left", &StateGame::UnitSpawn, this);
+    evMgr->AddCallback("Mouse_Right", &StateGame::RightClickAction, this);
+    evMgr->AddCallback("Mouse_Left", &StateGame::LeftClickAction, this);
 
     const sf::Vector2u size = context->m_wind->GetWindowSize();
     m_view.setSize(static_cast<float>(size.x), static_cast<float>(size.y));
@@ -50,12 +49,7 @@ void StateGame::OnCreate()
     context->m_gameMap->AddFile(ragnarok::Utils::GetWorkingDirectory() + "res/Maps/forest.map");
     loading->AddLoader(context->m_gameMap);
     loading->SetManualContinue(true);
-    context->m_soundManager->PlayMusic("TownTheme", 0.5f, true);
-
-    rectangle.setFillColor(sf::Color::Transparent);
-    rectangle.setOrigin(16.0f, 16.0f);
-    rectangle.setOutlineThickness(1.f);
-    rectangle.setOutlineColor(sf::Color::Green);
+    context->m_soundManager->PlayMusic("TownTheme", 50.f, true);
 }
 
 void StateGame::OnDestroy()
@@ -71,17 +65,12 @@ void StateGame::OnDestroy()
     context->m_gameMap->GetTileSet()->Purge();
 }
 
-void StateGame::Update(const sf::Time& t_time)
+void StateGame::Update(const sf::Time & t_time)
 {
     auto context = m_stateMgr->GetContext();
     const auto pos = m_stateMgr->GetContext()->m_entityManager->GetComponent<ragnarok::C_Position>(m_player, ragnarok::Component::Position);
     if (pos)
     {
-        //const auto screenPos = context->m_wind->GetRenderWindow()->mapCoordsToPixel(pos->GetPosition());
-        //auto fpos = static_cast<sf::Vector2f>(screenPos) - sf::Vector2f(16.0f, 16.0f);
-        //context->m_guiManager->GetInterface("SelectionSprite")->SetPosition(fpos);	//!\ a changer une fois que la map seras en full visibilit�
-        rectangle.setPosition(pos->GetPosition());
-
         const auto spriteSheet = context->m_entityManager->GetComponent<ragnarok::C_SpriteSheet>(m_player, ragnarok::Component::SpriteSheet);
         if (spriteSheet == nullptr || spriteSheet->GetSpriteSheet()->GetCurrentAnim()->GetName() != "Attack")
         {
@@ -138,7 +127,7 @@ void StateGame::UpdateCamera()
     }
 }
 
-void StateGame::MovementLogic(const sf::Vector2f& t_delta) const
+void StateGame::MovementLogic(const sf::Vector2f & t_delta) const
 {
     ragnarok::Message msgx(static_cast<ragnarok::MessageType>(ragnarok::EntityMessage::Move));
     msgx.m_receiver = m_player;
@@ -176,11 +165,9 @@ void StateGame::Draw()
         context->m_gameMap->Draw(i);
         m_stateMgr->GetContext()->m_systemManager->Draw(m_stateMgr->GetContext()->m_wind, i);
     }
-
-    context->m_wind->GetRenderer()->Draw(rectangle);
 }
 
-void StateGame::MainMenu(ragnarok::EventDetails* t_details)
+void StateGame::MainMenu(ragnarok::EventDetails * t_details)
 {
     m_stateMgr->SwitchTo(ragnarok::StateType::MainMenu);
 }
@@ -197,7 +184,7 @@ void StateGame::Activate()
 void StateGame::Deactivate()
 {}
 
-void StateGame::Interact(ragnarok::EventDetails *t_details)
+void StateGame::RightClickAction(ragnarok::EventDetails * t_details)
 {
     if (t_details->m_name != "Mouse_Right")
     {
@@ -218,8 +205,8 @@ void StateGame::Interact(ragnarok::EventDetails *t_details)
             const auto attack = context->m_entityManager->GetComponent<ragnarok::C_Attack>(m_player,
                                                                                            ragnarok::Component::Attack);
             const auto spriteSheet =
-                    context->m_entityManager->GetComponent<ragnarok::C_SpriteSheet>(m_player,
-                                                                                    ragnarok::Component::SpriteSheet);
+                context->m_entityManager->GetComponent<ragnarok::C_SpriteSheet>(m_player,
+                                                                                ragnarok::Component::SpriteSheet);
             if (attack == nullptr || spriteSheet->GetSpriteSheet()->GetCurrentAnim()->GetName() == "Attack")
             {
                 return;
@@ -233,41 +220,80 @@ void StateGame::Interact(ragnarok::EventDetails *t_details)
     }
 }
 
-void StateGame::UnitSpawn(ragnarok::EventDetails* t_details)
+void StateGame::LeftClickAction(ragnarok::EventDetails * t_details)
 {
     if (t_details->m_name == "Mouse_Left")
     {
         const auto context = m_stateMgr->GetContext();
-        auto& rand = *(context->m_rand);
+        auto& rand = *(context->m_rand);				//TEMP
         ragnarok::GUIManager* gui = context->m_guiManager;
         if (gui->GetInterface("UnitMenu")->IsFocused())
         {
             if (gui->GetInterface("UnitMenu")->GetElement("UnitPeasant")->GetState() == ragnarok::GUIElementState::Clicked)
             {
-                std::cout << "on spawn un peasant" << std::endl;
-                const int entityId = context->m_entityManager->AddEntity("Peasant");
-                const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
-                const auto rposx = rand(0.0f, 900.0f);
-                const auto rposy = rand(0.0f, 900.0f);
-                pos->SetPosition(rposx, rposy);
+                if (m_population < m_max_population)
+                {
+                    std::cout << "on spawn un peasant" << std::endl;
+                    const int entityId = context->m_entityManager->AddEntity("Peasant");
+                    const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
+                    const auto rposx = rand(0.0f, 900.0f);				//TEMP
+                    const auto rposy = rand(0.0f, 900.0f);				//TEMP
+                    pos->SetPosition(rposx, rposy);
+                    ++m_population;
+                }
+                else
+                {
+                    std::cout << "Population maximale atteinte !" << std::endl;
+                }
             }
             else if (gui->GetInterface("UnitMenu")->GetElement("UnitSoldier")->GetState() == ragnarok::GUIElementState::Clicked)
             {
-                std::cout << "on spawn un soldier" << std::endl;
-                const int entityId = context->m_entityManager->AddEntity("Soldier");
-                const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
-                const auto rposx = rand(0.0f, 900.0f);
-                const auto rposy = rand(0.0f, 900.0f);
-                pos->SetPosition(rposx, rposy);
+                if (m_population < m_max_population)
+                {
+                    std::cout << "on spawn un soldier" << std::endl;
+                    const int entityId = context->m_entityManager->AddEntity("Soldier");
+                    const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
+                    const auto rposx = rand(0.0f, 900.0f);				//TEMP
+                    const auto rposy = rand(0.0f, 900.0f);				//TEMP
+                    pos->SetPosition(rposx, rposy);
+                    ++m_population;
+                }
+                else
+                {
+                    std::cout << "Population maximale atteinte !" << std::endl;
+                }
             }
             else if (gui->GetInterface("UnitMenu")->GetElement("UnitArcher")->GetState() == ragnarok::GUIElementState::Clicked)
             {
-                std::cout << "on spawn un archer" << std::endl;
-                const int entityId = context->m_entityManager->AddEntity("Archer");
-                const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
-                const auto rposx = rand(0.0f, 900.0f);
-                const auto rposy = rand(0.0f, 900.0f);
-                pos->SetPosition(rposx, rposy);
+                if (m_population < m_max_population)
+                {
+                    std::cout << "on spawn un archer" << std::endl;
+                    const int entityId = context->m_entityManager->AddEntity("Archer");
+                    const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
+                    const auto rposx = rand(0.0f, 900.0f);				//TEMP
+                    const auto rposy = rand(0.0f, 900.0f);				//TEMP
+                    pos->SetPosition(rposx, rposy);
+                    ++m_population;
+                }
+                else
+                {
+                    std::cout << "Population maximale atteinte !" << std::endl;
+                }
+            }
+        }
+        else if (!gui->GetInterface("RessourceMenu")->IsFocused())
+        {
+            ragnarok::Window* window = context->m_wind;
+            const sf::Vector2i mousePos = context->m_eventManager->GetMousePos(window->GetRenderWindow());
+            const sf::Vector2f clickedPosition = window->GetRenderWindow()->mapPixelToCoords(mousePos);
+            int clickedEntity = context->m_entityManager->FindEntityAtPoint(clickedPosition);
+            if (clickedEntity != -1)
+            {
+                m_player = clickedEntity;
+                const auto pos = m_stateMgr->GetContext()->m_entityManager->GetComponent<ragnarok::C_Position>(m_player, ragnarok::Component::Position);
+                m_destination = pos->GetPosition();
+                const auto diff = m_destination - pos->GetPosition();
+                MovementLogic(diff);
             }
         }
     }
@@ -277,6 +303,6 @@ void StateGame::UpdateRessources()
 {
     const auto context = m_stateMgr->GetContext();
     ragnarok::GUIManager* gui = context->m_guiManager;
-    Gold = (Gold + 1) % 100;		//!\ A changer, seulement pour les tests
-    gui->GetInterface("RessourceMenu")->GetElement("RessourceBar")->SetText("Gold : " + std::to_string(Gold) + "\nPopulation : " + std::to_string(Population) + "/10");
+    int m_gold = m_RessourceHandler.GetGold();
+    gui->GetInterface("RessourceMenu")->GetElement("RessourceBar")->SetText("Gold : " + std::to_string(m_gold) + "\nPopulation : " + std::to_string(m_population) + "/10");
 }

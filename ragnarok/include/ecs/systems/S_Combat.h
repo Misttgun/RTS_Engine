@@ -29,9 +29,9 @@ namespace ragnarok
 
         void AttackEntity(unsigned int t_damage, EntityId t_entity) const;
 
-        void BeginAttack(const EntityId &t_entity, const C_Position *t_attackerPosition,
-                         const C_Position *t_targetPosition) const;
+        void BeginAttack(const EntityId &t_entity, const C_Position *t_attackerPosition, const C_Position *t_targetPosition) const;
 
         void SendAttackMessage(int t_sender, C_Attack *const t_attack) const;
+		void SendFarmingMessage(int t_sender, C_Attack* const t_attack);
     };
 }
