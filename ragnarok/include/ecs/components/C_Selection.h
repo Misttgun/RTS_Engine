@@ -10,7 +10,7 @@ namespace ragnarok
     class C_Selection : public C_Base
     {
     public:
-        C_Selection() : C_Base(Component::Selection), m_showSelection(true)
+        C_Selection() : C_Base(Component::Selection), m_showSelection(false)
         {}
 
         void ReadIn(std::stringstream& t_stream) override

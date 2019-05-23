@@ -15,6 +15,10 @@ namespace ragnarok
         req.Clear();
 
         m_gameMap = nullptr;
+        debugBox = sf::RectangleShape(sf::Vector2f(32.0f, 32.0f));
+        debugBox.setFillColor(sf::Color::Transparent);
+        debugBox.setOutlineThickness(1.f);
+        debugBox.setOutlineColor(sf::Color::Red);
     }
 
     void S_Collision::SetMap(Map* t_map)
@@ -55,7 +59,7 @@ namespace ragnarok
             {
                 const auto collidable1 = entities->GetComponent<C_Collidable>(*itr, Component::Collidable);
                 const auto collidable2 = entities->GetComponent<C_Collidable>(*itr2, Component::Collidable);
-                
+
                 if(collidable1->GetCollidable().intersects(collidable2->GetCollidable()))
                 {
                     // Entity-on-entity collision!
@@ -141,7 +145,7 @@ namespace ragnarok
         }
 
         // Sort collision information in a descending order. This ensures that collision with the largest area of intersection comes first
-        std::sort(t_collisions.begin(), t_collisions.end(), [](CollisionElement& t_1, CollisionElement& t_2) {return t_1.m_area > t_2.m_area;});
+        std::sort(t_collisions.begin(), t_collisions.end(), [](CollisionElement& t_1, CollisionElement& t_2) {return t_1.m_area > t_2.m_area; });
 
         for(auto &col : t_collisions)
         {
@@ -156,7 +160,7 @@ namespace ragnarok
             // Penetration information on x and y axis
             const float xDiff = (EntityAABB.left + (EntityAABB.width / 2)) - (col.m_tileBounds.left + (col.m_tileBounds.width / 2));
             const float yDiff = (EntityAABB.top + (EntityAABB.height / 2)) - (col.m_tileBounds.top + (col.m_tileBounds.height / 2));
-            
+
             // Exact distance by which the entity is going to be pushed to resolve the collision
             float resolve = 0;
 
@@ -208,4 +212,25 @@ namespace ragnarok
 
     void S_Collision::Notify(const Message& t_message)
     {}
+
+    void S_Collision::Render(Window* t_wind)
+    {
+        EntityManager* entities = m_systemManager->GetEntityManager();
+        for(auto &entity : m_entities)
+        {
+            C_Collidable* col = entities->GetComponent<C_Collidable>(entity, Component::Collidable);
+            C_Position* pos = entities->GetComponent<C_Position>(entity, Component::Position);
+
+            // If the components are not null and we can show the health on screen
+            if(col && pos)
+            {
+                auto aabb = col->GetCollidable();
+                sf::Vector2f size(aabb.width, aabb.height);
+                debugBox.setSize(size);
+                debugBox.setOrigin(sf::Vector2f(aabb.width / 2, aabb.height / 2));
+                debugBox.setPosition(pos->GetPosition());
+                t_wind->GetRenderer()->Draw(debugBox);
+            }
+        }
+    }
 }

@@ -20,7 +20,7 @@ namespace ragnarok
         m_healthBar = sf::RectangleShape(m_healthBarSize);
         m_healthBar.setFillColor(sf::Color::Green);
 
-        // Set up of the health bar
+        // Set up of the selection rectangle
         EntityManager* entities = m_systemManager->GetEntityManager();
         m_selectionRect = sf::RectangleShape(sf::Vector2f(32.0f, 32.0f));
         m_selectionRect.setFillColor(sf::Color::Transparent);
@@ -46,7 +46,7 @@ namespace ragnarok
             C_Selection* selection = entities->GetComponent<C_Selection>(entity, Component::Selection);
 
             // If the components are not null and we can show the health on screen
-            if(health && selection)
+            if(health && selection && pos)
             {
                 if(health->ShowHealth())
                 {

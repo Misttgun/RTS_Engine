@@ -3,6 +3,7 @@
 #include "../core/S_Base.h"
 #include "../components/C_Position.h"
 #include "../components/C_Collidable.h"
+#include "../../window/Window.h"
 
 namespace ragnarok
 {
@@ -38,6 +39,7 @@ namespace ragnarok
         void Update(float t_dT) override;
         void HandleEvent(const EntityId& t_entity, const EntityEvent& t_event) override;
         void Notify(const Message& t_message) override;
+        void Render(Window* t_wind);
 
         private:
         /**
@@ -77,5 +79,6 @@ namespace ragnarok
         void CheckOutOfBounds(C_Position* t_pos) const;
 
         Map* m_gameMap;
+        sf::RectangleShape debugBox;
     };
 }

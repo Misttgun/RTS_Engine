@@ -1,5 +1,6 @@
 #include <ecs/components/C_Attack.h>
 #include <ecs/components/C_SpriteSheet.h>
+#include <ecs/components/C_Selection.h>
 #include "states/StateManager.h"
 #include "window/Window.h"
 #include "gui/GUIManager.h"
@@ -41,7 +42,7 @@ void StateGame::OnCreate()
     const sf::Vector2u size = context->m_wind->GetWindowSize();
     m_view.setSize(static_cast<float>(size.x), static_cast<float>(size.y));
     m_view.setCenter(static_cast<float>(size.x) / 2, static_cast<float>(size.y) / 2);
-    m_view.zoom(0.6f);
+    m_view.zoom(0.8f);
     gui->GetInterface("UnitMenu")->SetPosition(sf::Vector2f(0.f, static_cast<float>(size.y) - 50.f));
 
     auto loading = m_stateMgr->GetState<ragnarok::StateLoading>(ragnarok::StateType::Loading);
@@ -49,7 +50,7 @@ void StateGame::OnCreate()
     context->m_gameMap->AddFile(ragnarok::Utils::GetWorkingDirectory() + "res/Maps/forest.map");
     loading->AddLoader(context->m_gameMap);
     loading->SetManualContinue(true);
-    context->m_soundManager->PlayMusic("TownTheme", 50.f, true);
+    //context->m_soundManager->PlayMusic("TownTheme", 50.f, true);
 }
 
 void StateGame::OnDestroy()
@@ -176,8 +177,7 @@ void StateGame::Activate()
 {
     auto map = m_stateMgr->GetContext()->m_gameMap;
 
-    //m_player = map->GetPlayerId();
-    m_player = 0;
+    m_player = -1;
     map->Redraw();
 }
 
@@ -286,14 +286,23 @@ void StateGame::LeftClickAction(ragnarok::EventDetails * t_details)
             ragnarok::Window* window = context->m_wind;
             const sf::Vector2i mousePos = context->m_eventManager->GetMousePos(window->GetRenderWindow());
             const sf::Vector2f clickedPosition = window->GetRenderWindow()->mapPixelToCoords(mousePos);
-            int clickedEntity = context->m_entityManager->FindEntityAtPoint(clickedPosition);
+            const int clickedEntity = context->m_entityManager->FindEntityAtPoint(clickedPosition);
             if (clickedEntity != -1)
             {
+                const auto currentEntity = m_player;
                 m_player = clickedEntity;
-                const auto pos = m_stateMgr->GetContext()->m_entityManager->GetComponent<ragnarok::C_Position>(m_player, ragnarok::Component::Position);
+                const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(m_player, ragnarok::Component::Position);
+                const auto selection = context->m_entityManager->GetComponent<ragnarok::C_Selection>(m_player, ragnarok::Component::Selection);
+                const auto oldSelection = context->m_entityManager->GetComponent<ragnarok::C_Selection>(currentEntity, ragnarok::Component::Selection);
+                if(oldSelection)
+                    oldSelection->SetSelection(false);
+
+                if(selection)
+                    selection->SetSelection(true);
+
                 m_destination = pos->GetPosition();
                 const auto diff = m_destination - pos->GetPosition();
-                MovementLogic(diff);
+                MovementLogic(sf::Vector2f(0,0));
             }
         }
     }
@@ -303,6 +312,6 @@ void StateGame::UpdateRessources()
 {
     const auto context = m_stateMgr->GetContext();
     ragnarok::GUIManager* gui = context->m_guiManager;
-    int m_gold = m_RessourceHandler.GetGold();
+    const int m_gold = m_RessourceHandler.GetGold();
     gui->GetInterface("RessourceMenu")->GetElement("RessourceBar")->SetText("Gold : " + std::to_string(m_gold) + "\nPopulation : " + std::to_string(m_population) + "/10");
 }

@@ -2,6 +2,7 @@
 #include "../../../include/ecs/core/EntityManager.h"
 #include "../../../include/ecs/systems/S_Renderer.h"
 #include "../../../include/ecs/systems/S_EntityUI.h"
+#include "../../../include/ecs/systems/S_Collision.h"
 
 namespace ragnarok
 {
@@ -78,6 +79,13 @@ namespace ragnarok
         {
             auto ui = dynamic_cast<S_EntityUI*>(itr->second.get());
             ui->Render(t_wind);
+        }
+
+        itr = m_systems.find(System::Collision);
+        if(itr != m_systems.end())
+        {
+            auto col = dynamic_cast<S_Collision*>(itr->second.get());
+            col->Render(t_wind);
         }
     }
 
