@@ -28,6 +28,7 @@ namespace ragnarok
                                  bool t_distant, unsigned int t_range) const;
 
         void AttackEntity(unsigned int t_damage, EntityId t_entity) const;
+        void FarmRessource(EntityId t_entity) const;
 
         void BeginAttack(const EntityId &t_entity, const C_Position *t_attackerPosition, const C_Position *t_targetPosition) const;
 

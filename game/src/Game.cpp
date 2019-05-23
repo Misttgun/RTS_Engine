@@ -14,6 +14,7 @@
 #include <ecs/components/C_Attack.h>
 #include <ecs/components/C_Health.h>
 #include <ecs/components/C_Selection.h>
+#include <ecs/components/C_Ressource.h>
 #include <ecs/systems/S_Combat.h>
 #include <ecs/systems/S_DeadRemover.h>
 #include "ecs/systems/S_State.h"
@@ -126,6 +127,7 @@ void Game::SetUpECS()
     m_entityManager.AddComponentType<ragnarok::C_Attack>(ragnarok::Component::Attack);
     m_entityManager.AddComponentType<ragnarok::C_Health>(ragnarok::Component::Health);
     m_entityManager.AddComponentType<ragnarok::C_Selection>(ragnarok::Component::Selection);
+    m_entityManager.AddComponentType<ragnarok::C_Ressource>(ragnarok::Component::Ressource);
 
     m_systemManager.AddSystem<ragnarok::S_State>(ragnarok::System::State);
     m_systemManager.AddSystem<ragnarok::S_Control>(ragnarok::System::Control);

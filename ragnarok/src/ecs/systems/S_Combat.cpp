@@ -7,6 +7,7 @@
 #include "../../../include/ecs/components/C_SpriteSheet.h"
 #include "../../../include/ecs/components/C_State.h"
 #include "../../../include/ecs/components/C_Health.h"
+#include "../../../include/ecs/components/C_Ressource.h"
 
 namespace ragnarok
 {
@@ -34,7 +35,7 @@ namespace ragnarok
     {
         EntityManager* entityMgr = m_systemManager->GetEntityManager();
 
-        for(auto &entity : m_entities)
+        for (auto &entity : m_entities)
         {
             const auto position = entityMgr->GetComponent<C_Position>(entity, Component::Position);
             const auto attack = entityMgr->GetComponent<C_Attack>(entity, Component::Attack);
@@ -42,27 +43,27 @@ namespace ragnarok
             AnimBase *currentAnim = spriteSheet->GetSpriteSheet()->GetCurrentAnim();
             const int targetEntity = attack->GetTargetEntity();
 
-            if(!attack->UpdateCooldown(t_dT))
+            if (!attack->UpdateCooldown(t_dT))
             {
                 continue;
             }
 
-            if(targetEntity == -1)
+            if (targetEntity == -1)
             {
                 continue;
             }
 
-            if(currentAnim->GetName() != "Attack")
+            if (currentAnim->GetName() != "Attack")
             {
                 const C_Position *targetPosition =
                     entityMgr->GetComponent<C_Position>(targetEntity,
                                                         Component::Position);
 
-                if(targetPosition == nullptr)
+                if (targetPosition == nullptr)
                 {
                     attack->SetTargetEntity(-1);
                 }
-                else if(EntityInAttackRange(position, targetPosition, attack->IsDistant(), attack->GetRange()))
+                else if (EntityInAttackRange(position, targetPosition, attack->IsDistant(), attack->GetRange()))
                 {
                     BeginAttack(entity, position, targetPosition);
                 }
@@ -72,7 +73,7 @@ namespace ragnarok
 
     void S_Combat::HandleEvent(const EntityId& t_entity, const EntityEvent& t_event)
     {
-        if(t_event == EntityEvent::Targeted_Entity)
+        if (t_event == EntityEvent::Targeted_Entity)
         {
             // TODO Start chasing the target, but in a different system, not here
         }
@@ -87,23 +88,28 @@ namespace ragnarok
         EntityManager* eMgr = m_systemManager->GetEntityManager();
 
         const auto type = static_cast<EntityMessage>(t_message.m_type);
-        if(type == EntityMessage::Attack_Action)
+        if (type == EntityMessage::Attack_Action)
         {
-            if(!HasEntity(t_message.m_sender))
+            if (!HasEntity(t_message.m_sender))
             {
                 return;
             }
 
             const auto attack = eMgr->GetComponent<C_Attack>(t_message.m_sender, Component::Attack);
-            if(attack->IsUnderCooldown())
+            if (attack->IsUnderCooldown())
             {
                 return;
             }
 
             attack->ResetCooldown();
+
             AttackEntity(attack->GetDamage(), attack->GetTargetEntity()); // TODO inflict damage
-            SendFarmingMessage(t_message.m_sender, attack);
-            SendAttackMessage(t_message.m_sender, attack);
+            //SendAttackMessage(t_message.m_sender, attack);
+            if (attack->CanFarm())
+            {
+                //SendFarmingMessage(t_message.m_sender, attack);
+                FarmRessource(attack->GetTargetEntity());
+            }
         }
     }
 
@@ -128,28 +134,47 @@ namespace ragnarok
     }
 
     /**
-     * Informs the systems of the death of passed entity
+     * Attack the passed entity
      * @param t_damage The damage dealt by the attacker
-     * @param t_entity The ID of the dying entity
+     * @param t_entity The ID of the entity
      */
     void S_Combat::AttackEntity(unsigned int t_damage, EntityId t_entity) const
     {
         EntityManager* eMgr = m_systemManager->GetEntityManager();
         auto hcomp = eMgr->GetComponent<C_Health>(t_entity, Component::Health);
-        if(!hcomp)
+
+        if (!hcomp)
             return;
 
-        int newHealth = hcomp->GetHealth() - t_damage;
-        if(newHealth < 0)
+        int newHealth = hcomp->GetHealth() - static_cast<int>(t_damage);
+        if (newHealth < 0)
             newHealth = 0;
         hcomp->SetHealth(newHealth);
 
-        if(newHealth == 0)
+        if (newHealth == 0)
         {
             Message msg(static_cast<MessageType>(EntityMessage::Dead));
             msg.m_receiver = t_entity;
             m_systemManager->GetMessageHandler()->Dispatch(msg);
         }
+    }
+
+    /**
+     * Farm the passed ressource
+     * @param t_entity The ID of the ressource entity
+     */
+    void S_Combat::FarmRessource(EntityId t_entity) const
+    {
+        EntityManager* eMgr = m_systemManager->GetEntityManager();
+        const auto rescomp = eMgr->GetComponent<C_Ressource>(t_entity, Component::Ressource);
+
+        if(!rescomp)
+            return;
+
+        Message msg(static_cast<MessageType>(EntityMessage::Farming));
+        msg.m_receiver = t_entity;
+        m_systemManager->GetMessageHandler()->Dispatch(msg);
+
     }
 
     /**
@@ -163,19 +188,19 @@ namespace ragnarok
 
         Message directionMessage(static_cast<MessageType>(EntityMessage::Direction_Changed));
         directionMessage.m_receiver = t_entity;
-        if(static_cast<int>(delta.x) > 0)
+        if (static_cast<int>(delta.x) > 0)
         {
             directionMessage.m_int = static_cast<int>(ragnarok::Direction::Right);
         }
-        else if(static_cast<int>(delta.x) < 0)
+        else if (static_cast<int>(delta.x) < 0)
         {
             directionMessage.m_int = static_cast<int>(ragnarok::Direction::Left);
         }
-        else if(static_cast<int>(delta.y) > 0)
+        else if (static_cast<int>(delta.y) > 0)
         {
             directionMessage.m_int = static_cast<int>(ragnarok::Direction::Down);
         }
-        else if(static_cast<int>(delta.y) < 0)
+        else if (static_cast<int>(delta.y) < 0)
         {
             directionMessage.m_int = static_cast<int>(ragnarok::Direction::Up);
         }
@@ -212,7 +237,6 @@ namespace ragnarok
         Message msg(static_cast<MessageType>(EntityMessage::Farming));
         msg.m_sender = t_sender;
         msg.m_receiver = t_attack->GetTargetEntity();
-        msg.m_int = static_cast<int>(t_attack->GetAttackType());
         m_systemManager->GetMessageHandler()->Dispatch(msg);
     }
 }

@@ -9,7 +9,7 @@ namespace ragnarok
      */
     enum class Component
     {
-        Position = 0, SpriteSheet, State, Movable, Controller, Collidable, SoundEmitter, SoundListener, Attack, Health, Selection, COUNT
+        Position = 0, SpriteSheet, State, Movable, Controller, Collidable, SoundEmitter, SoundListener, Attack, Health, Selection, Ressource, COUNT
     };
 
     enum class System

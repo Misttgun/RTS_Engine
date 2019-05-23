@@ -9,26 +9,23 @@ namespace ragnarok
 		m_systemManager->GetMessageHandler()->Subscribe(EntityMessage::Farming, this);
 	}
 
-	RessourceHandler::~RessourceHandler()
-	{
+	RessourceHandler::~RessourceHandler() = default;
 
-	}
 
-	
-	/*void RessourceHandler::Update(float t_dT)
-	{
-		
-	}
+    /*void RessourceHandler::Update(float t_dT)
+    {
+        
+    }
 
-	void RessourceHandler::HandleEvent(const EntityId & t_entity, const EntityEvent & t_event)
-	{
-		if (t_event == EntityEvent::Targeted_Entity) {
-			// TODO Start chasing the target, but in a different system, not here
-		}
-	}*/
+    void RessourceHandler::HandleEvent(const EntityId & t_entity, const EntityEvent & t_event)
+    {
+        if (t_event == EntityEvent::Targeted_Entity) {
+            // TODO Start chasing the target, but in a different system, not here
+        }
+    }*/
 
-	int RessourceHandler::GetGold()
-	{
+	int RessourceHandler::GetGold() const
+    {
 		return m_gold;
 	}
 
@@ -48,6 +45,6 @@ namespace ragnarok
 	{
 		const auto type = static_cast<EntityMessage>(t_message.m_type);
 		if (type == EntityMessage::Farming)
-			m_gold += 5;
+			m_gold += 1;
 	}
 }

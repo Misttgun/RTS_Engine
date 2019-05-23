@@ -37,12 +37,12 @@ namespace ragnarok
             m_cooldown = t_cooldown;
         }
 
-        unsigned int GetRange() const
+        int GetRange() const
         {
             return m_range;
         }
 
-        unsigned int GetTargetEntity() const
+        int GetTargetEntity() const
         {
             return m_targetEntityID;
         }
@@ -80,25 +80,25 @@ namespace ragnarok
             return m_currentCooldown > 0.0F;
         }
 
-        unsigned int GetAttackType() const
+        int GetAttackType() const
         {
             return m_attackType;
         }
 
-        unsigned int GetDamage() const
+        int GetDamage() const
         {
             return m_damage;
         }
 
     private:
         bool m_distant;
-        unsigned int m_damage;
+        int m_damage;
         float m_cooldown;
-        unsigned int m_range;
-        unsigned int m_attackType;
+        int m_range;
+        int m_attackType;
 		bool m_canFarm;
 
         float m_currentCooldown;
-        unsigned int m_targetEntityID;
+        int m_targetEntityID;
     };
 }

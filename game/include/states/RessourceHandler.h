@@ -17,7 +17,7 @@ namespace ragnarok
 		//void HandleEvent(const EntityId& t_entity, const EntityEvent& t_event);
 		void Notify(const Message& t_message);
 
-		int GetGold();
+		int GetGold() const;
 		bool UseGold(int value);
 
 	private:
