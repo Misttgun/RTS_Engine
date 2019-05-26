@@ -1,6 +1,7 @@
 #include "../../../include/ecs/systems/S_Control.h"
 #include "../../../include/ecs/core/SystemManager.h"
 #include "../../../include/ecs/components/C_Movable.h"
+#include "../../../include/ecs/components/C_Attack.h"
 
 namespace ragnarok
 {
@@ -37,5 +38,11 @@ namespace ragnarok
     {
         auto mov = m_systemManager->GetEntityManager()->GetComponent<C_Movable>(t_entity, Component::Movable);
         mov->Move(t_dir);
+
+        auto attack = m_systemManager->GetEntityManager()->GetComponent<C_Attack>(t_entity, Component::Attack);
+        if (attack != nullptr)
+        {
+            attack->SetTargetEntity(-1);
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace ragnarok
     class C_Attack : public C_Base
     {
     public:
-        C_Attack() : C_Base(Component::Attack), m_currentCooldown(0), m_targetEntityID(-1)
+        C_Attack() : C_Base(Component::Attack), m_currentCooldown(0), m_targetEntityID(-1), m_attackedEntityID(-1)
         {}
 
         void ReadIn(std::stringstream& t_stream) override
@@ -47,6 +47,11 @@ namespace ragnarok
             return m_targetEntityID;
         }
 
+        int GetAttackedEntity() const
+        {
+            return m_attackedEntityID;
+        }
+
         bool IsDistant() const
         {
             return m_distant;
@@ -63,6 +68,11 @@ namespace ragnarok
         void SetTargetEntity(unsigned int t_entity)
         {
             m_targetEntityID = t_entity;
+        }
+
+        void SetAttackedEntity(unsigned int t_entity)
+        {
+            m_attackedEntityID = t_entity;
         }
 
         bool UpdateCooldown(float t_deltaTime)
@@ -100,5 +110,6 @@ namespace ragnarok
 
         float m_currentCooldown;
         int m_targetEntityID;
+        int m_attackedEntityID;
     };
 }

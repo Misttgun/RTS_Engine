@@ -54,12 +54,6 @@ namespace ragnarok
                 continue;
             }
 
-            const auto movement = entityMgr->GetComponent<C_Movable>(entity, Component::Movable);
-            if (movement != nullptr && (movement->GetMovement().x != 0 || movement->GetMovement().y != 0))
-            {
-                continue;
-            }
-
             if (currentAnim->GetName() != "Attack")
             {
                 const C_Position *targetPosition =
@@ -72,6 +66,7 @@ namespace ragnarok
                 }
                 else if (EntityInAttackRange(position, targetPosition, attack->IsDistant(), attack->GetRange()))
                 {
+                    attack->SetAttackedEntity(targetEntity);
                     BeginAttack(entity, position, targetPosition);
                 }
             }
@@ -110,12 +105,12 @@ namespace ragnarok
 
             attack->ResetCooldown();
 
-            AttackEntity(attack->GetDamage(), attack->GetTargetEntity()); // TODO inflict damage
+            AttackEntity(attack->GetDamage(), attack->GetAttackedEntity()); // TODO inflict damage
             //SendAttackMessage(t_message.m_sender, attack);
             if (attack->CanFarm())
             {
                 //SendFarmingMessage(t_message.m_sender, attack);
-                FarmRessource(attack->GetTargetEntity());
+                FarmRessource(attack->GetAttackedEntity());
             }
         }
     }
