@@ -87,8 +87,6 @@ void StateGame::Update(const sf::Time & t_time)
 			}
 		}
 	}
-
-
     /*const auto pos = m_stateMgr->GetContext()->m_entityManager->GetComponent<ragnarok::C_Position>(m_player, ragnarok::Component::Position);
     if (pos)
     {
