@@ -78,6 +78,11 @@ namespace ragnarok
 
         void Purge();
 
+		int getMaxId() const
+		{
+			return m_idCounter;
+		}
+
         private:
         unsigned int m_idCounter;
         EntityContainer m_entities;
