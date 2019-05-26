@@ -6,6 +6,7 @@
 #include "../../../include/map/Map.h"
 #include "../../../include/ecs/components/C_SpriteSheet.h"
 #include "../../../include/ecs/components/C_State.h"
+#include "../../../include/ecs/components/C_Movable.h"
 #include "../../../include/ecs/components/C_Health.h"
 #include "../../../include/ecs/components/C_Ressource.h"
 
@@ -49,6 +50,12 @@ namespace ragnarok
             }
 
             if (targetEntity == -1)
+            {
+                continue;
+            }
+
+            const auto movement = entityMgr->GetComponent<C_Movable>(entity, Component::Movable);
+            if (movement != nullptr && (movement->GetMovement().x != 0 || movement->GetMovement().y != 0))
             {
                 continue;
             }
@@ -174,7 +181,6 @@ namespace ragnarok
         Message msg(static_cast<MessageType>(EntityMessage::Farming));
         msg.m_receiver = t_entity;
         m_systemManager->GetMessageHandler()->Dispatch(msg);
-
     }
 
     /**
@@ -205,7 +211,6 @@ namespace ragnarok
             directionMessage.m_int = static_cast<int>(ragnarok::Direction::Up);
         }
         m_systemManager->GetMessageHandler()->Dispatch(directionMessage);
-
 
         Message stateMessage(static_cast<MessageType>(EntityMessage::Switch_State));
         stateMessage.m_receiver = t_entity;
