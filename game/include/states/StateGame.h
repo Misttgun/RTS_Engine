@@ -28,8 +28,6 @@ private:
 	void UpdateCamera();
 	void MovementLogic(const sf::Vector2f& t_delta, const int id) const;
 	int m_player;
-	int m_population;
-	int m_max_population;
 	sf::Vector2f m_destination;
 	ragnarok::RessourceHandler m_RessourceHandler;
 	UnitManager m_UnitManager;

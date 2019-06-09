@@ -28,8 +28,6 @@ void StateGame::OnCreate()
     ragnarok::GUIManager* gui = context->m_guiManager;
     gui->LoadInterface("RessourceMenu.interface", "RessourceMenu");
     gui->GetInterface("RessourceMenu")->SetPosition(sf::Vector2f(0.f, 0.f));
-    m_population = 0;
-    m_max_population = 20;
     gui->LoadInterface("UnitMenu.interface", "UnitMenu");
     //gui->LoadInterface("SelectionSprite.interface", "SelectionSprite");
 
@@ -104,6 +102,7 @@ void StateGame::Update(const sf::Time & t_time)
 	UpdateCamera();
 	UpdateRessources();
     context->m_gameMap->Update(t_time.asSeconds());
+	context->m_gameMap->GetDiscreteMap()->updateMapSize(context->m_gameMap->GetMapSize());
     context->m_systemManager->Update(t_time.asSeconds());
 }
 
@@ -231,8 +230,16 @@ void StateGame::RightClickAction(ragnarok::EventDetails * t_details)
             attack->SetTargetEntity(clickedEntity);
 
         }
-		m_UnitManager.setDestination(m_player, clickedPosition);
-		m_destination = clickedPosition;
+		if (context->m_gameMap->GetDiscreteMap()->isEmpty(clickedPosition.x, clickedPosition.y) == -1)
+		{
+			context->m_gameMap->GetDiscreteMap()->setSquare(m_UnitManager.getDestination(m_player).x, m_UnitManager.getDestination(m_player).y, -1);
+			context->m_gameMap->GetDiscreteMap()->setSquare(clickedPosition.x, clickedPosition.y, m_player);
+			auto t_dest = context->m_gameMap->GetDiscreteMap()->getSquareCenter(sf::Vector2i(clickedPosition));
+			m_UnitManager.setDestination(m_player, sf::Vector2f(t_dest));
+			m_destination = sf::Vector2f(t_dest);
+		}
+		//m_UnitManager.setDestination(m_player, clickedPosition);
+		//m_destination = clickedPosition;
     }
 }
 
@@ -246,37 +253,61 @@ void StateGame::LeftClickAction(ragnarok::EventDetails * t_details)
 
         if (gui->GetInterface("UnitMenu")->IsFocused())
         {
-			if (m_population < m_max_population)
+			if (m_RessourceHandler.canSpawn())
 			{
-				const auto rposx = rand(100.0f, 700.0f);				//TEMP
-				const auto rposy = rand(100.0f, 500.0f);				//TEMP
-
-				int entityId = -1;
+				std::string str = "";
+				int goldCost = 0;
 
 				if (gui->GetInterface("UnitMenu")->GetElement("UnitPeasant")->GetState() == ragnarok::GUIElementState::Clicked)
 				{
-					std::cout << "on spawn un peasant" << std::endl;
-					entityId = context->m_entityManager->AddEntity("Peasant");
+					str = "Peasant";
+					goldCost = 1;
 				}
 				else if (gui->GetInterface("UnitMenu")->GetElement("UnitSoldier")->GetState() == ragnarok::GUIElementState::Clicked)
 				{
-					std::cout << "on spawn un soldier" << std::endl;
-					entityId = context->m_entityManager->AddEntity("Soldier");
+					str = "Soldier";
+					goldCost = 10;
 				}
 				else if (gui->GetInterface("UnitMenu")->GetElement("UnitArcher")->GetState() == ragnarok::GUIElementState::Clicked)
 				{
-					std::cout << "on spawn un archer" << std::endl;
-					entityId = context->m_entityManager->AddEntity("Archer");
+					str = "Archer";
+					goldCost = 15;
 				}
 				else
 				{
 					std::cout << "WTF, où est-ce quon a clické ??!!" << std::endl;
 				}
 
-				const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
-				pos->SetPosition(rposx, rposy);
-				m_UnitManager.AddUnit(entityId, rposx, rposy);
-				++m_population;
+				if (goldCost > 0)
+				{
+					if (m_RessourceHandler.UseGold(goldCost))
+					{
+						std::cout << "on spawn un " << str << std::endl;
+						const int entityId = context->m_entityManager->AddEntity(str);
+						const auto pos = context->m_entityManager->GetComponent<ragnarok::C_Position>(entityId, ragnarok::Component::Position);
+
+						auto rposx = rand(100.0f, 700.0f);				//TEMP
+						auto rposy = rand(100.0f, 500.0f);				//TEMP
+						while (context->m_gameMap->GetDiscreteMap()->isEmpty(rposx, rposy) != -1)
+						{
+							rposx = rand(100.0f, 700.0f);
+							rposy = rand(100.0f, 500.0f);
+						}
+						auto t_pos = context->m_gameMap->GetDiscreteMap()->setSquare(rposx, rposy, entityId);
+
+						pos->SetPosition(t_pos.x, t_pos.y);
+						m_UnitManager.AddUnit(entityId, t_pos.x, t_pos.y);
+						m_RessourceHandler.spawnOneUnit();
+					}
+					else
+					{
+						std::cout << "Pas assez d'Or !!" << std::endl;
+					}
+				}
+				else
+				{
+					std::cout << "Error gold number" << std::endl;
+				}
 			}
 			else
 				std::cout << "Population maximale atteinte !" << std::endl;
@@ -317,5 +348,5 @@ void StateGame::UpdateRessources()
     const auto context = m_stateMgr->GetContext();
     ragnarok::GUIManager* gui = context->m_guiManager;
     const int m_gold = m_RessourceHandler.GetGold();
-    gui->GetInterface("RessourceMenu")->GetElement("RessourceBar")->SetText("Gold : " + std::to_string(m_gold) + "\nPopulation : " + std::to_string(m_population) + "/" + std::to_string(m_max_population));
+    gui->GetInterface("RessourceMenu")->GetElement("RessourceBar")->SetText("Gold : " + std::to_string(m_gold) + "\nPopulation : " + std::to_string(m_RessourceHandler.GetPopulation()) + "/" + std::to_string(m_RessourceHandler.GetMaxPopulation()));
 }

@@ -11,6 +11,7 @@
 #include "../threads/FileLoader.h"
 #include "../window/Window.h"
 #include "../ecs/core/EntityManager.h"
+#include "DiscreteMap.h"
 
 namespace ragnarok
 {
@@ -31,6 +32,7 @@ namespace ragnarok
 
         TileSet* GetTileSet();
         TileMap* GetTileMap();
+		DiscreteMap* GetDiscreteMap();
 
         unsigned int GetTileSize()const;
         sf::Vector2u GetMapSize()const;
@@ -60,6 +62,7 @@ namespace ragnarok
         TileSet m_tileSet;
         TileMap m_tileMap;
         MapLoadees m_loadees;
+		DiscreteMap m_discreteMap;
 
         std::array<sf::RenderTexture, Sheet::Num_Layers> m_textures;
         sf::Sprite m_layerSprite;

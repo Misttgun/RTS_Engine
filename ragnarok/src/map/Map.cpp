@@ -7,9 +7,9 @@
 
 namespace ragnarok
 {
-    Map::Map(Window* t_window, EntityManager* t_entityManager, TextureManager* t_textureManager)
-        : m_window(t_window), m_entityManager(t_entityManager), m_textureManager(t_textureManager), m_tileSet(t_textureManager)
-        , m_tileMap({ 0, 0 }, m_tileSet), m_defaultTile(nullptr, "DTile", sf::Vector2i(0, 0)), m_playerId(-1), m_gameTime(0.f), m_dayLength(30.f)
+	Map::Map(Window* t_window, EntityManager* t_entityManager, TextureManager* t_textureManager)
+		: m_window(t_window), m_entityManager(t_entityManager), m_textureManager(t_textureManager), m_tileSet(t_textureManager)
+		, m_tileMap({ 0, 0 }, m_tileSet), m_defaultTile(nullptr, "DTile", sf::Vector2i(0, 0)), m_playerId(-1), m_gameTime(0.f), m_dayLength(30.f), m_discreteMap(GetMapSize())
     {
         m_layerSprite.setPosition({ 0,0 });
     }
@@ -18,6 +18,7 @@ namespace ragnarok
     {
         PurgeMap();
         m_tileSet.Purge();
+		m_discreteMap.Purge();
     }
 
     void Map::SetStateManager(StateManager* t_stateManager)
@@ -44,6 +45,11 @@ namespace ragnarok
     {
         return &m_tileMap;
     }
+
+	DiscreteMap* Map::GetDiscreteMap()
+	{
+		return &m_discreteMap;
+	}
 
     unsigned int Map::GetTileSize()const
     {
