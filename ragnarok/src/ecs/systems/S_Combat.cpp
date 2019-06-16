@@ -126,14 +126,14 @@ namespace ragnarok
                                        const C_Position *t_targetPosition,
                                        bool t_distant, unsigned int t_range) const
     {
-        float attackerX = t_attackerPosition->GetPosition().x / Tile_Size;
-        float attackerY = t_attackerPosition->GetPosition().y / Tile_Size;
-        float targetX = t_targetPosition->GetPosition().x / Tile_Size;
-        float targetY = t_targetPosition->GetPosition().y / Tile_Size;
+        int attackerX = t_attackerPosition->GetMapPosition().x;
+        int attackerY = t_attackerPosition->GetMapPosition().y;
+        int targetX = t_targetPosition->GetMapPosition().x;
+        int targetY = t_targetPosition->GetMapPosition().y;
 
-        float xDist = attackerX - targetX;
-        float yDist = attackerY - targetY;
-        float distance = std::abs(xDist) + std::abs(yDist);
+        int xDist = attackerX - targetX;
+        int yDist = attackerY - targetY;
+        int distance = std::abs(xDist) + std::abs(yDist);
 
         return distance <= t_range;
     }
