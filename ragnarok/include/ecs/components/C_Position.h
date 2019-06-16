@@ -19,6 +19,7 @@ namespace ragnarok
         void ReadIn(std::stringstream& t_stream) override
         {
             t_stream >> m_position.x >> m_position.y >> m_elevation;
+            UpdateMapPosition();
         }
 
         sf::Vector2f GetPosition() const
@@ -31,6 +32,16 @@ namespace ragnarok
             return m_positionOld;
         }
 
+        sf::Vector2i GetMapPosition() const
+        {
+            return m_mapPosition;
+        }
+
+        sf::Vector2i GetOldMapPosition() const
+        {
+            return m_mapPositionOld;
+        }
+
         unsigned int GetElevation() const
         {
             return m_elevation;
@@ -40,12 +51,14 @@ namespace ragnarok
         {
             m_positionOld = m_position;
             m_position = sf::Vector2f(t_x, t_y);
+            UpdateMapPosition();
         }
 
         void SetPosition(const sf::Vector2f& t_vec)
         {
             m_positionOld = m_position;
             m_position = t_vec;
+            UpdateMapPosition();
         }
 
         void SetElevation(unsigned int t_elevation)
@@ -62,11 +75,21 @@ namespace ragnarok
         {
             m_positionOld = m_position;
             m_position += t_vec;
+            UpdateMapPosition();
         }
 
         private:
         sf::Vector2f m_position;
         sf::Vector2f m_positionOld;
+        sf::Vector2i m_mapPosition;
+        sf::Vector2i m_mapPositionOld;
         unsigned int m_elevation; // represent how high the entity is in relation to the map
+
+        void UpdateMapPosition()
+        {
+            m_mapPositionOld = m_mapPosition;
+            m_mapPosition = {static_cast<int>(m_position.x / Tile_Size),
+                             static_cast<int>(m_position.y / Tile_Size)};
+        }
     };
 }
