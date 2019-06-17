@@ -9,6 +9,7 @@
 #include "../../resources/TextureManager.h"
 #include "../../map/MapLoadee.h"
 #include "../../map/MapDefinitions.h"
+#include "../../states/StateManager.h"
 
 namespace ragnarok
 {
@@ -31,7 +32,7 @@ namespace ragnarok
     class EntityManager : public MapLoadee
     {
         public:
-        EntityManager(SystemManager* t_sysMgr, TextureManager* t_textureMgr);
+        EntityManager(Map *t_map, SystemManager *t_sysMgr, TextureManager *t_textureMgr);
         ~EntityManager();
 
         int AddEntity(const Bitmask& t_mask);
@@ -89,6 +90,7 @@ namespace ragnarok
         EntityTypes m_entityTypes;
         ComponentFactory m_cFactory;
 
+        Map* m_gameMap;
         SystemManager* m_systems;
         TextureManager* m_textureManager;
     };

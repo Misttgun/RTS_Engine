@@ -1,3 +1,4 @@
+#include "../../../include/map/Map.h"
 #include "../../../include/ecs/core/EntityManager.h"
 #include "../../../include/ecs/core/SystemManager.h"
 #include "../../../include/types/EventQueue.h"
@@ -8,8 +9,8 @@
 
 namespace ragnarok
 {
-    EntityManager::EntityManager(SystemManager* t_sysMgr, TextureManager* t_textureMgr) 
-        : m_idCounter(0), m_systems(t_sysMgr), m_textureManager(t_textureMgr)
+    EntityManager::EntityManager(Map *t_map, SystemManager *t_sysMgr, TextureManager *t_textureMgr)
+        : m_idCounter(0), m_gameMap(t_map), m_systems(t_sysMgr), m_textureManager(t_textureMgr)
     {}
 
     EntityManager::~EntityManager()
@@ -132,6 +133,12 @@ namespace ragnarok
             return false;
         }
 
+        const auto position = GetComponent<C_Position>(t_id, Component::Position);
+        if (position != nullptr)
+        {
+            sf::Vector2i occupiedPosition = position->GetOccupiedMapPosition();
+            m_gameMap->GetDiscreteMap()->setSquare(occupiedPosition.x, occupiedPosition.y, -1);
+        }
         m_entities.erase(itr);
         m_systems->RemoveEntity(t_id);
 

@@ -30,7 +30,7 @@
 #include "../include/states/StateGame.h"
 
 Game::Game() : m_window("Ragnarok Demo", sf::Vector2u(800, 600), false), m_soundManager(&m_audioManager), m_guiManager(m_window.GetEventManager(), &m_context),
-m_entityManager(&m_systemManager, &m_textureManager), m_gameMap(&m_window, &m_entityManager, &m_textureManager)
+m_entityManager(&m_gameMap, &m_systemManager, &m_textureManager), m_gameMap(&m_window, &m_entityManager, &m_textureManager)
 {
     SetUpClasses();
     SetUpECS();
