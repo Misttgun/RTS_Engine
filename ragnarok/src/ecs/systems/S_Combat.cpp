@@ -29,7 +29,7 @@ namespace ragnarok
      * Starts attacks for entities having a target in range
      *
      * For each entity, manages attack cooldown and if the entity has a target,
-     * begins attacks when in range. Also unsets target when dead.
+     * begins attacks when in range and still. Also unsets target when dead.
      * @param t_dT The delta time since last frame
      */
     void S_Combat::Update(float t_dT)
@@ -50,6 +50,12 @@ namespace ragnarok
             }
 
             if (targetEntity == -1)
+            {
+                continue;
+            }
+
+            const auto movement = entityMgr->GetComponent<C_Movable>(entity, Component::Movable);
+            if (movement != nullptr && (movement->GetMovement().x != 0 || movement->GetMovement().y != 0))
             {
                 continue;
             }
