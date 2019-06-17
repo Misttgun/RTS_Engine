@@ -42,6 +42,11 @@ namespace ragnarok
             return m_mapPositionOld;
         }
 
+        sf::Vector2i GetOccupiedMapPosition() const
+        {
+            return m_occupiedMapPosition;
+        }
+
         unsigned int GetElevation() const
         {
             return m_elevation;
@@ -66,6 +71,11 @@ namespace ragnarok
             m_elevation = t_elevation;
         }
 
+        void SetOccupiedMapPosition(sf::Vector2i mapSquare)
+        {
+            m_occupiedMapPosition = mapSquare;
+        }
+
         void MoveBy(float t_x)
         {
             MoveBy(sf::Vector2f(t_x, t_x));
@@ -83,6 +93,7 @@ namespace ragnarok
         sf::Vector2f m_positionOld;
         sf::Vector2i m_mapPosition;
         sf::Vector2i m_mapPositionOld;
+        sf::Vector2i m_occupiedMapPosition;
         unsigned int m_elevation; // represent how high the entity is in relation to the map
 
         void UpdateMapPosition()

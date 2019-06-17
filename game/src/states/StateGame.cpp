@@ -234,6 +234,10 @@ void StateGame::RightClickAction(ragnarok::EventDetails * t_details)
 		{
 			context->m_gameMap->GetDiscreteMap()->setSquare(m_UnitManager.getDestination(m_player).x, m_UnitManager.getDestination(m_player).y, -1);
 			context->m_gameMap->GetDiscreteMap()->setSquare(clickedPosition.x, clickedPosition.y, m_player);
+			auto position = context->m_entityManager->GetComponent<ragnarok::C_Position>(m_player,
+                                                                                         ragnarok::Component::Position);
+			sf::Vector2i occupiedMapPosition = {static_cast<int>(clickedPosition.x), static_cast<int>(clickedPosition.y)};
+            position->SetOccupiedMapPosition(occupiedMapPosition);
 			auto t_dest = context->m_gameMap->GetDiscreteMap()->getSquareCenter(sf::Vector2i(clickedPosition));
 			m_UnitManager.setDestination(m_player, sf::Vector2f(t_dest));
 			m_destination = sf::Vector2f(t_dest);
@@ -275,7 +279,7 @@ void StateGame::LeftClickAction(ragnarok::EventDetails * t_details)
 				}
 				else
 				{
-					std::cout << "WTF, où est-ce quon a clické ??!!" << std::endl;
+					std::cout << "WTF, oï¿½ est-ce quon a clickï¿½ ??!!" << std::endl;
 				}
 
 				if (goldCost > 0)
@@ -296,6 +300,7 @@ void StateGame::LeftClickAction(ragnarok::EventDetails * t_details)
 						auto t_pos = context->m_gameMap->GetDiscreteMap()->setSquare(rposx, rposy, entityId);
 
 						pos->SetPosition(t_pos.x, t_pos.y);
+                        pos->SetOccupiedMapPosition({static_cast<int>(rposx), static_cast<int>(rposy)});
 						m_UnitManager.AddUnit(entityId, t_pos.x, t_pos.y);
 						m_RessourceHandler.spawnOneUnit();
 					}
