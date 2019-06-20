@@ -230,7 +230,7 @@ void StateGame::RightClickAction(ragnarok::EventDetails * t_details)
             attack->SetTargetEntity(clickedEntity);
 
         }
-		if (context->m_gameMap->GetDiscreteMap()->isEmpty(clickedPosition.x, clickedPosition.y) == -1)
+		else if (context->m_gameMap->GetDiscreteMap()->isEmpty(clickedPosition.x, clickedPosition.y) == -1)
 		{
 			context->m_gameMap->GetDiscreteMap()->setSquare(m_UnitManager.getDestination(m_player).x, m_UnitManager.getDestination(m_player).y, -1);
 			context->m_gameMap->GetDiscreteMap()->setSquare(clickedPosition.x, clickedPosition.y, m_player);
