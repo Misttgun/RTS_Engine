@@ -1,4 +1,6 @@
 #pragma once
+#include <unordered_map>
+
 #include "Unit.h"
 
 using EntityId = unsigned int;

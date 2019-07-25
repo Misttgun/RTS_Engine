@@ -4,6 +4,7 @@
 #include "events/EventManager.h"
 #include "../UnitManager.h"
 #include "RessourceHandler.h"
+#include "network/Server.h"
 
 class StateGame : public ragnarok::BaseState {
 public:
@@ -31,4 +32,5 @@ private:
 	sf::Vector2f m_destination;
 	ragnarok::RessourceHandler m_RessourceHandler;
 	UnitManager m_UnitManager;
+	ragnarok::Server m_server;
 };

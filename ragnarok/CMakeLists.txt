@@ -35,5 +35,5 @@ if(UNIX)
     include_directories(${X11_INCLUDE_DIR})
 endif(UNIX)
 
-add_library(Ragnarok ${ENGINE_SOURCES} ${HEADERS})
+add_library(Ragnarok ${ENGINE_SOURCES} ${HEADERS} src/network/Server.cpp include/network/Server.h include/network/Command.h)
 target_link_libraries(Ragnarok sfml-network sfml-audio sfml-graphics sfml-window sfml-system)

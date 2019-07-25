@@ -14,10 +14,11 @@
 #include "map/Map.h"
 #include "../../include/states/StateGame.h"
 
-StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager), m_destination(sf::Vector2f(-1, -1)), m_RessourceHandler(t_stateManager->GetContext()->m_systemManager)
-{
-
-}
+StateGame::StateGame(ragnarok::StateManager* t_stateManager) : BaseState(t_stateManager),
+                                                               m_destination(sf::Vector2f(-1, -1)),
+                                                               m_RessourceHandler(t_stateManager->GetContext()->m_systemManager),
+                                                               m_server(t_stateManager->GetContext(), &m_UnitManager)
+{}
 
 StateGame::~StateGame() = default;
 
@@ -46,7 +47,9 @@ void StateGame::OnCreate()
     auto loading = m_stateMgr->GetState<ragnarok::StateLoading>(ragnarok::StateType::Loading);
     context->m_gameMap->AddFile(ragnarok::Utils::GetWorkingDirectory() + "res/Maps/demo.map");
     //context->m_gameMap->AddFile(ragnarok::Utils::GetWorkingDirectory() + "res/Maps/forest.map");
+    m_server.AddFile(ragnarok::Utils::GetWorkingDirectory() + "server.cfg");
     loading->AddLoader(context->m_gameMap);
+    loading->AddLoader(&m_server);
     loading->SetManualContinue(true);
     //context->m_soundManager->PlayMusic("TownTheme", 50.f, true);
 }
@@ -67,6 +70,25 @@ void StateGame::OnDestroy()
 void StateGame::Update(const sf::Time & t_time)
 {
     auto context = m_stateMgr->GetContext();
+
+    if (!m_server.isConnected())
+    {
+        if (m_server.connect() != sf::Socket::Done)
+        {
+            std::cerr << "Error while connecting to remote server." << std::endl;
+            return;
+        }
+        else
+        {
+            std::cout << "Connection established with remote server." << std::endl;
+        }
+    }
+
+    if (!m_server.processIncomingData())
+    {
+        std::cerr << "Error while processing incoming data." << std::endl;
+        exit(1);
+    }
 
 	for (int t_id = 0; t_id < m_stateMgr->GetContext()->m_entityManager->getMaxId(); t_id++)
 	{
@@ -303,6 +325,19 @@ void StateGame::LeftClickAction(ragnarok::EventDetails * t_details)
                         pos->SetOccupiedMapPosition({static_cast<int>(rposx), static_cast<int>(rposy)});
 						m_UnitManager.AddUnit(entityId, t_pos.x, t_pos.y);
 						m_RessourceHandler.spawnOneUnit();
+
+						const std::vector<std::string> entityTypes = ragnarok::ENTITY_TYPES;
+
+                        auto it = std::find(entityTypes.begin(), entityTypes.end(), str);
+                        if (it == entityTypes.end())
+                        {
+                            std::cerr << "Unknown entity type " << str << std::endl;
+                        }
+                        else
+                        {
+                            auto index = std::distance(entityTypes.begin(), it);
+                            m_server.enqueueAction("CREA", index, t_pos.x, t_pos.y);
+                        }
 					}
 					else
 					{
